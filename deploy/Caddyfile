@@ -1,0 +1,19 @@
+# Sitio de la app para Caddy. setup-vps.sh lo copia a
+# /etc/caddy/sitios/matematica.caddy (cada app tiene su archivo, así pueden
+# convivir varias en el mismo VPS) y reemplaza __DOMINIO__ por tu dominio (o
+# por matematica.<IP>.sslip.io si no tenés). HTTPS automático con Let's
+# Encrypt; la app escucha solo en 127.0.0.1:8091.
+__DOMINIO__ {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:8091
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+	request_body {
+		max_size 20MB
+	}
+	log {
+		output file /var/log/caddy/matematica.log
+	}
+}

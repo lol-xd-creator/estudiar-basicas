@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Estudiar matemática</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230d110d'/%3E%3Cpath d='M10.6 3.2c-.9-.6-2 .1-2.2 1.3L7.3 11.6c-.2 1.2-1.3 1.9-2.2 1.3' fill='none' stroke='%2334c76a' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <script src="js/theme-boot.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="math.css">
+  <link rel="stylesheet" href="themes.css">
+  <script src="vendor/markdown-it.min.js"></script>
+  <script src="js/mathjax-config.js"></script>
+  <script src="vendor/mathjax/tex-chtml-nofont.js" defer></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <div class="app" id="app">
+    <aside class="side" aria-label="Notas">
+      <header class="side-head">
+        <span class="brand"><span class="brand-mark">∫</span> Estudiar matemática</span>
+        <div class="theme-toggle" role="group" aria-label="Tema">
+          <button type="button" data-theme-set="dia" title="Día: papel y tinta" aria-pressed="false">☀</button>
+          <button type="button" data-theme-set="noche" title="Noche: oscuro y cálido" aria-pressed="false">☾</button>
+        </div>
+        <button type="button" class="btn-icon" id="side-hide" title="Esconder el mapa (Ctrl+B)" aria-label="Esconder el mapa">«</button>
+      </header>
+      <div class="search">
+        <input id="search" type="search" placeholder="Buscar en las notas…  (Ctrl+K)" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="side-tools">
+        <button type="button" class="btn-ghost" id="new-root" title="Nueva nota en la raíz">+ Nota</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn-icon" id="download-map" title="Descargar todo el mapa (HTML con los dos temas)">⤓</button>
+        <button type="button" class="btn-icon" id="expand-all" title="Desplegar todo">⊞</button>
+        <button type="button" class="btn-icon" id="collapse-all" title="Plegar todo">⊟</button>
+        <button type="button" class="btn-icon" id="logout" title="Cerrar sesión" hidden>⏻</button>
+      </div>
+      <nav class="tree" id="tree"></nav>
+      <div class="results" id="results" hidden></div>
+    </aside>
+
+    <div class="splitter" id="splitter" role="separator" aria-orientation="vertical" aria-label="Cambiar ancho del árbol" tabindex="0"></div>
+
+    <main class="main" id="main">
+      <div class="placeholder" id="placeholder">
+        <p>Elegí una nota del árbol o creá una nueva.</p>
+      </div>
+
+      <section class="note" id="note" hidden>
+        <header class="note-head">
+          <button type="button" class="btn-icon side-show" id="side-show" title="Mostrar el mapa (Ctrl+B)" aria-label="Mostrar el mapa">☰</button>
+          <nav class="crumbs" id="crumbs" aria-label="Ubicación"></nav>
+          <div class="note-actions">
+            <span class="status" id="status" aria-live="polite"></span>
+            <div class="font-size" role="group" aria-label="Tamaño de letra">
+              <button type="button" class="btn-icon" data-font="-1" title="Letra más chica">A−</button>
+              <button type="button" class="btn-icon" data-font="1" title="Letra más grande">A+</button>
+            </div>
+            <div class="seg" role="tablist" aria-label="Modo">
+              <button type="button" role="tab" data-mode="view" aria-selected="true">Vista</button>
+              <button type="button" role="tab" data-mode="edit" aria-selected="false">Editar</button>
+            </div>
+            <div class="more">
+              <button type="button" class="btn-icon" id="more-btn" aria-haspopup="menu" aria-expanded="false" title="Más">⋯</button>
+              <div class="menu" id="more-menu" role="menu" hidden>
+                <button type="button" role="menuitem" data-act="child">Nueva subnota</button>
+                <button type="button" role="menuitem" data-act="download">Descargar .md</button>
+                <hr>
+                <button type="button" role="menuitem" data-act="delete" class="is-danger">Eliminar…</button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Vista: el documento con su índice -->
+        <div class="view" id="view">
+          <article class="doc">
+            <h1 class="doc-title" id="view-title"></h1>
+            <div class="md" id="view-body"></div>
+            <nav class="children" id="children" aria-label="Subnotas"></nav>
+          </article>
+          <aside class="toc" id="toc" aria-label="En esta nota"></aside>
+        </div>
+
+        <!-- Edición: texto a la izquierda, vista previa en vivo a la derecha -->
+        <div class="edit" id="edit" hidden>
+          <input class="title-input" id="title-input" aria-label="Título" placeholder="Título" spellcheck="false">
+          <div class="toolbar" role="toolbar" aria-label="Formato">
+            <button type="button" data-fmt="h2" title="Título">H2</button>
+            <button type="button" data-fmt="h3" title="Subtítulo">H3</button>
+            <button type="button" data-fmt="bold" title="Negrita (Ctrl+B)"><b>B</b></button>
+            <button type="button" data-fmt="italic" title="Cursiva (Ctrl+I)"><i>I</i></button>
+            <button type="button" data-fmt="ul" title="Lista">• Lista</button>
+            <span class="sep"></span>
+            <button type="button" data-fmt="math" title="Fórmula en el texto (Ctrl+M)"><i>x</i>²</button>
+            <button type="button" data-fmt="display" title="Ecuación centrada (Ctrl+Shift+M)">∑ Ecuación</button>
+            <button type="button" data-fmt="pasos" title="Igualdades alineadas con su justificación">= Pasos</button>
+            <select id="box-select" title="Insertar un bloque" aria-label="Insertar un bloque">
+              <option value="">Bloque…</option>
+              <option value="teorema">Teorema</option>
+              <option value="definicion">Definición</option>
+              <option value="demostracion">Demostración</option>
+              <option value="idea">Idea de la demostración</option>
+              <option value="propiedades">Propiedades</option>
+              <option value="ejemplo">Ejemplo</option>
+              <option value="ejercicio">Ejercicio</option>
+              <option value="solucion">Solución (desplegable)</option>
+              <option value="resultado">Resultado (recuadro)</option>
+              <option value="observacion">Observación</option>
+              <option value="claves">Claves</option>
+              <option value="ojo">Ojo</option>
+              <option value="aclaracion">Aclaración fuera del apunte</option>
+            </select>
+            <select id="symbol-select" title="Insertar un símbolo o estructura" aria-label="Insertar un símbolo">
+              <option value="">Símbolo…</option>
+              <optgroup label="Estructuras">
+                <option value="\frac{a}{b}">Fracción  a/b</option>
+                <option value="\iint_D f(x;y)\,\dx\,\dy">Integral doble  ∬</option>
+                <option value="\int_a^b f(x)\,\dx">Integral  ∫</option>
+                <option value="\int_a^b \dx \int_c^d f(x;y)\,\dy">Iterada  ∫dx∫dy</option>
+                <option value="\eval{F(x)}{a}{b}">Evaluación  F|ₐᵇ</option>
+                <option value="\lim_{x \to a} f(x)">Límite</option>
+                <option value="\sum_{i=1}^{n} a_i">Sumatoria  ∑</option>
+                <option value="\sqrt{x}">Raíz  √</option>
+                <option value="\pd{f}{x}">Derivada parcial  ∂f/∂x</option>
+                <option value="\begin{cases} a & \text{si } x > 0 \\ b & \text{si } x \le 0 \end{cases}">Función partida  {</option>
+                <option value="\begin{pmatrix} a & b \\ c & d \end{pmatrix}">Matriz</option>
+                <option value="\underbrace{a + b}_{\text{nota}}">Llave con nota  ⏟</option>
+                <option value="\overset{\text{Fubini}}{=}">= con nota encima</option>
+                <option value="\cancel{x}">Tachar  x̸</option>
+                <option value="\hl{x}">Resaltar  (\hl, \hlb, \hlc)</option>
+              </optgroup>
+              <optgroup label="Símbolos">
+                <option value="\R">ℝ</option>
+                <option value="\in">∈</option>
+                <option value="\forall">∀</option>
+                <option value="\exists">∃</option>
+                <option value="\le">≤</option>
+                <option value="\ge">≥</option>
+                <option value="\ne">≠</option>
+                <option value="\approx">≈</option>
+                <option value="\to">→</option>
+                <option value="\Rightarrow">⇒</option>
+                <option value="\Leftrightarrow">⇔</option>
+                <option value="\infty">∞</option>
+                <option value="\partial">∂</option>
+                <option value="\nabla">∇</option>
+                <option value="\Delta">Δ</option>
+                <option value="\cdot">·</option>
+                <option value="\wedge">∧</option>
+                <option value="\cup">∪</option>
+                <option value="\cap">∩</option>
+                <option value="\subset">⊂</option>
+              </optgroup>
+              <optgroup label="Griegas">
+                <option value="\alpha">α</option>
+                <option value="\beta">β</option>
+                <option value="\gamma">γ</option>
+                <option value="\delta">δ</option>
+                <option value="\varepsilon">ε</option>
+                <option value="\xi">ξ</option>
+                <option value="\theta">θ</option>
+                <option value="\lambda">λ</option>
+                <option value="\mu">μ</option>
+                <option value="\pi">π</option>
+                <option value="\rho">ρ</option>
+                <option value="\sigma">σ</option>
+                <option value="\varphi">φ</option>
+                <option value="\omega">ω</option>
+              </optgroup>
+            </select>
+            <span class="sep"></span>
+            <button type="button" data-fmt="plot2d" title="Gráfico en el plano">▱ 2D</button>
+            <button type="button" data-fmt="plot3d" title="Gráfico en el espacio">◇ 3D</button>
+            <button type="button" id="image-btn" title="Insertar imagen (también podés pegarla o arrastrarla)">▣ Imagen</button>
+            <input type="file" id="image-file" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden>
+            <span class="spacer"></span>
+            <button type="button" class="btn-ghost" id="toggle-preview" title="Mostrar u ocultar la vista previa">Vista previa</button>
+          </div>
+          <div class="edit-panes" id="edit-panes">
+            <div class="editor-col">
+              <textarea id="editor" spellcheck="false" aria-label="Contenido en Markdown con LaTeX"></textarea>
+              <div class="formula-bar" id="formula-bar" hidden aria-live="polite"></div>
+            </div>
+            <div class="preview md" id="preview"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

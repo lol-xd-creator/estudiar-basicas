@@ -1,0 +1,196 @@
+/* Temas de color. <html data-theme="dia|noche">; lo elige theme-boot.js
+   (por la hora la primera vez, después lo que haya elegido el usuario).
+
+   Día (papel):  hoja crema, tinta casi negra, azul tinta y bordó. Nada de
+                 blanco: se lee como un libro de análisis bien impreso.
+   Noche:        gris azulado profundo (no negro puro), texto marfil y
+                 acentos dorados; colores de cajas apagados. */
+
+:root,
+:root[data-theme="noche"] {
+  color-scheme: dark;
+  --bg: #15181d;
+  --bg-side: #111418;
+  --bg-raised: #1c2128;
+  --bg-hover: #222831;
+  --bg-active: #2a313b;
+  --line: #262c35;
+  --line-strong: #363e4a;
+  --text: #d9d5cb;
+  --text-strong: #f3efe6;
+  --muted: #a7a196;
+  --faint: #7a756b;
+  --accent: #d6b56d;
+  --accent-2: #c98a8a;
+  --accent-soft: rgba(214, 181, 109, 0.12);
+  --danger: #e07a7a;
+  --math: #efeadf;
+
+  /* cajas */
+  --thm: #8db4d9;
+  --def: #9cc49b;
+  --prop: #c6a6dd;
+  --idea: #d6b56d;
+  --proof: #4b5563;
+  --result: #d6b56d;
+  --note: #8fb8c4;
+  --tip: #9cc49b;
+  --warning: #dba35f;
+  --danger-box: #e07a7a;
+  --example: #c99f80;
+  --concept: #8fb8c4;
+  --exercise: #c99f80;
+  --key: #d6b56d;
+
+  --hl-a: rgba(224, 122, 122, 0.24);
+  --hl-b: rgba(141, 180, 217, 0.24);
+  --hl-c: rgba(214, 181, 109, 0.26);
+  --paso-hover: rgba(214, 181, 109, 0.06);
+
+  /* gráficos */
+  --plot-figure: #12151a;
+  --plot-bg: #12151a;
+  --plot-1: #e0b75e;
+  --plot-2: #e07a7a;
+  --plot-3: #7fb3d9;
+  --plot-4: #8fcf9a;
+  --plot-5: #c4a0e0;
+  --plot-6: #e39a62;
+  --plot-7: #9a968c;
+  --plot-axis: #9a968c;
+  --plot-grid: rgba(217, 213, 203, 0.07);
+  --plot-text: #d9d5cb;
+  --plot-low: #35598a;
+  --plot-mid: #3f9288;
+  --plot-high: #e2c272;
+
+  --selection: rgba(214, 181, 109, 0.28);
+  --scroll: #363e4a;
+  --shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --stripe: rgba(255, 255, 255, 0.02);
+  --overlay: rgba(8, 10, 13, 0.85);
+  --inline-code: #d6b56d;
+  --code-bg: #111418;
+  --code-head: #181c22;
+  --code-ln: #5a6270;
+  --code-ln-border: #232932;
+  --term-bg: #0e1114;
+  --mark: rgba(214, 181, 109, 0.14);
+  --page-glow: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(141, 180, 217, 0.05), transparent 70%);
+}
+
+:root[data-theme="dia"] {
+  color-scheme: light;
+  --bg: #ebe5d8;
+  --bg-side: #e2dbcb;
+  --bg-raised: #f0ebe0;
+  --bg-hover: #d9d0bd;
+  --bg-active: #d0c5ad;
+  --line: #d3c9b5;
+  --line-strong: #bdb199;
+  --text: #2e2a24;
+  --text-strong: #1a1814;
+  --muted: #6b6457;
+  --faint: #938a78;
+  --accent: #2f5a87;
+  --accent-2: #8b3a3a;
+  --accent-soft: rgba(47, 90, 135, 0.1);
+  --danger: #a43c3c;
+  --math: #1d1b17;
+
+  --thm: #2f5a87;
+  --def: #3d6e4a;
+  --prop: #6a4c8a;
+  --idea: #94691a;
+  --proof: #b9ad95;
+  --result: #8b3a3a;
+  --note: #3f6f7a;
+  --tip: #3d6e4a;
+  --warning: #9a621a;
+  --danger-box: #a43c3c;
+  --example: #8b4a2e;
+  --concept: #3f6f7a;
+  --exercise: #8b4a2e;
+  --key: #94691a;
+
+  --hl-a: rgba(164, 60, 60, 0.16);
+  --hl-b: rgba(47, 90, 135, 0.15);
+  --hl-c: rgba(176, 122, 30, 0.2);
+  --paso-hover: rgba(47, 90, 135, 0.05);
+
+  --plot-figure: #efe9dd;
+  --plot-bg: #efe9dd;
+  --plot-1: #2f5a87;
+  --plot-2: #a23b3b;
+  --plot-3: #3d7a4a;
+  --plot-4: #b07a1e;
+  --plot-5: #6a4c8a;
+  --plot-6: #2f7a7a;
+  --plot-7: #6b6457;
+  --plot-axis: #5a5348;
+  --plot-grid: rgba(46, 42, 36, 0.08);
+  --plot-text: #2e2a24;
+  --plot-low: #3d5f8c;
+  --plot-mid: #5c9670;
+  --plot-high: #d4a748;
+
+  --selection: rgba(47, 90, 135, 0.2);
+  --scroll: #c4b9a2;
+  --shadow: 0 12px 30px rgba(60, 50, 30, 0.16), 0 0 0 1px rgba(60, 50, 30, 0.05);
+  --stripe: rgba(60, 50, 30, 0.035);
+  --overlay: rgba(40, 34, 25, 0.6);
+  --inline-code: #8b3a3a;
+  --code-bg: #e6dfd1;
+  --code-head: #ddd5c4;
+  --code-ln: #a99f8c;
+  --code-ln-border: #d3c9b5;
+  --term-bg: #e2dbcc;
+  --mark: rgba(176, 122, 30, 0.16);
+  --page-glow: radial-gradient(ellipse 70% 40% at 50% -10%, rgba(255, 250, 235, 0.35), transparent 70%);
+}
+
+/* ---------- tipografía de libro ---------- */
+:root {
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "Sitka Text", Georgia, serif;
+}
+.md, .doc-title, .title-input, .ref-pop { font-family: var(--serif); }
+.md { font-size: 17px; }
+.view .md, .preview { font-size: calc(17px * var(--doc-scale, 1)); }
+.md h1, .md h2, .md h3, .md h4 { font-family: var(--serif); font-weight: 600; letter-spacing: 0.005em; }
+.md h2 { font-size: 1.42rem; border-bottom: 1px solid var(--line); }
+.md h3 { font-size: 1.15rem; font-style: italic; font-weight: 600; }
+.doc-title { font-weight: 500; font-size: 2.15rem; letter-spacing: 0.005em; padding-bottom: 0.35em; border-bottom: 1px solid var(--line); }
+.box-kind { font-variant: small-caps; letter-spacing: 0.04em; font-size: 1.06em; }
+.proof-head .box-kind { font-variant: normal; letter-spacing: 0; }
+.md strong { font-weight: 700; }
+
+/* Detalles de cada tema */
+.main { background: var(--page-glow), var(--bg); }
+.brand { font-family: var(--serif); font-weight: 600; font-size: 15.5px; }
+.brand-mark { font-family: "KaTeX_Main", var(--serif); font-style: italic; font-size: 17px; line-height: 1; padding: 1px 7px 3px; color: var(--accent); background: var(--accent-soft); }
+.row.is-selected { box-shadow: inset 2px 0 0 var(--accent); }
+.md a, .children a:hover { color: var(--accent); }
+.md h2 { color: var(--text-strong); }
+:root[data-theme="dia"] .md img { border-color: var(--line-strong); }
+
+/* Selector de tema */
+.theme-toggle {
+  display: inline-flex;
+  margin-left: auto;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px;
+}
+.theme-toggle button {
+  border: 0;
+  background: none;
+  border-radius: 999px;
+  width: 28px;
+  height: 24px;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--faint);
+}
+.theme-toggle button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+.theme-toggle button:hover { color: var(--text); }

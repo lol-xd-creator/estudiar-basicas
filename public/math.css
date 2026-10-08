@@ -1,0 +1,348 @@
+/* Estudiar matemática — fórmulas, demostraciones, cajas y gráficos.
+   Los colores son variables de themes.css. */
+
+/* ---------- texto y fórmulas ---------- */
+.view .md, .preview { font-size: calc(16px * var(--doc-scale, 1)); }
+.md { line-height: 1.75; container-type: inline-size; }
+.md mjx-container { color: var(--math); }
+/* Marcador de una formula que MathJax todavia no dibujo (o no pudo). */
+span.tex { font-family: var(--mono); font-size: 0.82em; color: var(--faint); white-space: pre-wrap; }
+span.tex[data-d="1"] { display: block; }
+mjx-merror { color: var(--danger) !important; background: color-mix(in srgb, var(--danger) 10%, transparent) !important; border-radius: 4px; }
+/* Mientras MathJax mide el ancho, los recuadros de resultado ocupan todo el renglon. */
+.mjx-measuring .box.result { width: auto; }
+.md p, .md li { overflow-wrap: break-word; }
+
+.math-display {
+  margin: 1em 0;
+  padding: 0.25em 0.2em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+}
+.math-display mjx-container[display="true"] { margin: 0 !important; }
+.math-display.is-inline { display: block; }
+
+/* Resaltados \hl \hlb \hlc: lo que cambia de un paso al siguiente */
+.hl-a, .hl-b, .hl-c { border-radius: 4px; padding: 0.05em 0.12em; margin: 0 -0.06em; }
+.hl-a { background: var(--hl-a); }
+.hl-b { background: var(--hl-b); }
+.hl-c { background: var(--hl-c); }
+
+/* Errores de LaTeX: se ve el código y qué falla */
+.math-error { color: var(--danger); background: color-mix(in srgb, var(--danger) 9%, transparent); border-radius: 4px; padding: 0.05em 0.35em; font-size: 0.85em; }
+span.math-error { display: inline-block; text-align: left; padding: 0.4em 0.7em; }
+.math-error code { font-family: var(--mono); white-space: pre-wrap; }
+.math-error-msg { display: block; font-size: 0.85em; margin-top: 0.2em; opacity: 0.85; }
+.ref-missing { color: var(--danger); }
+
+/* Citas (1), Teorema 2 … */
+.md a.ref, .md [data-ref] { color: var(--accent); cursor: pointer; }
+.md a.ref { text-decoration: none; border-bottom: 1px dotted currentColor; }
+.ref-pop {
+  position: fixed;
+  z-index: 80;
+  max-width: min(680px, 94vw);
+  max-height: 55vh;
+  overflow: hidden;
+  padding: 6px 16px;
+  background: var(--bg-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  pointer-events: none;
+  font-size: calc(15px * var(--doc-scale, 1));
+}
+.ref-pop.md { container-type: normal; width: max-content; }
+.ref-pop .box { margin: 6px 0; }
+.flash { animation: flash 1.6s ease-out; border-radius: 6px; }
+@keyframes flash { 0%, 30% { background: var(--accent-soft); box-shadow: 0 0 0 4px var(--accent-soft); } 100% { background: transparent; box-shadow: none; } }
+
+/* ---------- pasos: igualdades alineadas con su justificación ---------- */
+.pasos {
+  display: grid;
+  grid-template-columns: max-content max-content max-content minmax(9em, 1fr) auto;
+  column-gap: 0.5em;
+  margin: 1.1em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.2em 0;
+}
+.pasos-title { grid-column: 1 / -1; font-weight: 600; color: var(--text-strong); margin-bottom: 0.3em; }
+.paso {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: center;
+  padding: 0.3em 0.45em;
+  border-radius: 6px;
+  transition: background 0.12s;
+}
+.paso:hover { background: var(--paso-hover); }
+.paso-lhs { text-align: right; }
+.paso-rel { text-align: center; min-width: 1em; }
+.paso-rhs { text-align: left; }
+.paso.is-solo .paso-rhs { grid-column: 1 / 4; text-align: center; }
+.paso-just {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  white-space: normal;
+  margin-left: 0.9em;
+  padding-left: 0.8em;
+  border-left: 2px solid var(--line-strong);
+  color: var(--muted);
+  font-size: 0.86em;
+  line-height: 1.45;
+}
+.paso-just:empty { border-left-color: transparent; }
+.paso-just mjx-container { color: inherit; }
+/* En los pasos cada lado queda en un renglon (la grilla ya alinea). */
+.paso-lhs mjx-container, .paso-rhs mjx-container, .paso-rel mjx-container { white-space: nowrap; }
+.paso-tag { color: var(--faint); padding-left: 0.6em; }
+.paso.is-text { display: block; padding: 0.55em 0.45em 0.15em; }
+.paso-text { color: var(--text); font-style: italic; }
+.paso-text mjx-container { font-style: normal; }
+/* En pantallas angostas la justificación pasa abajo del paso. */
+@container (max-width: 620px) {
+  .pasos { grid-template-columns: max-content max-content minmax(0, 1fr) 0 auto; }
+  .paso-just { grid-column: 2 / 4; grid-row: 2; margin: 0.1em 0 0.2em; border-left: 0; padding-left: 0; }
+  .paso-just:not(:empty)::before { content: "↳ "; color: var(--faint); margin-right: 0.3em; }
+}
+
+/* ---------- cajas ---------- */
+.box.thm { --c: var(--thm); }
+.box.def { --c: var(--def); }
+.box.prop { --c: var(--prop); }
+.box.idea { --c: var(--idea); }
+.box.note { --c: var(--note); }
+.box.aside { --c: var(--faint); border-style: dashed; background: transparent; }
+.box.aside .box-title { font-style: italic; }
+.box-kind { font-weight: 700; color: var(--c); }
+.box-name { font-weight: 600; color: var(--text-strong); }
+.box-title { font-size: 0.92em; margin-bottom: 0.25em; }
+.box.thm, .box.def, .box.prop { background: color-mix(in srgb, var(--c) 7%, var(--bg)); border-radius: 8px; padding: 0.7em 1.15em; }
+.box.idea .box-kind::before { content: "◆ "; }
+
+/* H) y T) dentro de un teorema */
+.md p.ht { position: relative; padding-left: 6.8em; margin: 0.4em 0; }
+.md p.ht::before {
+  position: absolute;
+  left: 0;
+  top: 0.32em;
+  font-size: 0.68em;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--c, var(--accent));
+  justify-self: start;
+  padding: 0.12em 0.55em;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--c, var(--accent)) 15%, transparent);
+}
+.md p.ht-h::before { content: "Hipótesis"; }
+.md p.ht-t::before { content: "Tesis"; }
+
+/* Resultado en recuadro (como los del apunte) */
+.box.result {
+  --c: var(--result);
+  width: fit-content;
+  max-width: 100%;
+  margin: 1.3em auto;
+  padding: 0.35em 1.4em;
+  border: 2px solid var(--c);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--c) 6%, var(--bg));
+  overflow-x: auto;
+}
+.box.result .box-title { text-align: center; }
+.box.result .math-display { margin: 0.35em 0; }
+
+/* Demostración */
+.box.proof {
+  --c: var(--proof);
+  background: transparent;
+  border: 0;
+  border-left: 2px solid var(--c);
+  border-radius: 0;
+  padding: 0.25em 0 0.25em 1.1em;
+}
+.proof-head { display: flex; align-items: center; gap: 10px; }
+.proof-head .box-kind { font-style: italic; font-weight: 650; color: var(--text-strong); }
+.proof-tools { margin-left: auto; display: flex; gap: 4px; }
+.box > .box-title > .proof-tools { float: right; margin: 0 0 0 12px; font-size: 1rem; }
+.proof-tools button, .step-bar button {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1px 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.proof-tools button:hover, .step-bar button:hover:not(:disabled) { color: var(--text-strong); border-color: var(--line-strong); background: var(--bg-hover); }
+.qed { text-align: right; color: var(--text-strong); font-size: 1.1em; line-height: 1; margin-top: -0.4em; }
+.proof.is-folded > .box-body, .proof.is-folded > .qed { display: none; }
+.proof.is-folded { padding-bottom: 0.2em; }
+.proof.is-folded .proof-head .box-kind::after { content: " …"; color: var(--faint); font-style: normal; }
+
+/* Paso a paso */
+.step-hidden { visibility: hidden; }
+.paso.step-current, .is-stepping > .box-body > .step-current { background: var(--accent-soft); border-radius: 6px; }
+.proof.is-stepping:not(.is-last-step) > .qed { visibility: hidden; }
+.step-bar {
+  position: sticky;
+  bottom: 10px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 12px auto 4px;
+  padding: 5px 8px;
+  background: var(--bg-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  font-size: 13px;
+}
+.step-bar button { border-radius: 999px; padding: 3px 12px; }
+.step-bar button:disabled { opacity: 0.35; cursor: default; }
+.step-count { color: var(--muted); min-width: 7.5em; text-align: center; font-variant-numeric: tabular-nums; }
+
+/* ---------- gráficos ---------- */
+figure.plot {
+  margin: 1.4em 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--plot-figure);
+  overflow: hidden;
+  position: relative;
+}
+.plot-src { display: none; }
+.plot-stage { position: relative; width: 100%; margin: 0 auto; }
+.plot-canvas { display: block; width: 100%; cursor: grab; touch-action: pan-y; }
+.plot-canvas.is-dragging { cursor: grabbing; }
+.plot-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.plot-label {
+  position: absolute;
+  transform: translate(7px, calc(-100% - 4px));
+  white-space: nowrap;
+  font-size: 15px;
+  line-height: 1.2;
+  text-shadow: 0 0 3px var(--plot-figure), 0 0 3px var(--plot-figure), 0 0 6px var(--plot-figure);
+}
+.plot-label mjx-container { color: inherit; }
+.plot-label.is-region { transform: translate(-50%, -50%); font-size: 18px; font-weight: 600; }
+.plot-label.is-text { transform: translate(-50%, -50%); color: var(--text); }
+.plot-legend {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  max-width: 55%;
+  padding: 4px 10px;
+  font-size: 13px;
+  background: color-mix(in srgb, var(--plot-figure) 86%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.plot-legend-row { display: flex; align-items: center; gap: 8px; line-height: 1.7; }
+.plot-legend mjx-container { color: var(--text); }
+.plot-swatch { flex: none; width: 18px; height: 0; border-top: 2.5px solid; }
+.plot-swatch.is-dashed { border-top-style: dashed; }
+.plot-swatch.is-fill { width: 14px; height: 10px; border: 1px solid; border-radius: 2px; }
+.plot-tools { position: absolute; top: 8px; left: 8px; display: flex; gap: 3px; opacity: 0; transition: opacity 0.15s; }
+figure.plot:hover .plot-tools, .plot-tools:focus-within { opacity: 1; }
+.plot-tools button {
+  width: 27px;
+  height: 27px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg-raised);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1;
+}
+.plot-tools button:hover { color: var(--text-strong); border-color: var(--line-strong); }
+.plot-readout {
+  position: absolute;
+  left: 8px;
+  bottom: 6px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font: 11.5px var(--mono);
+  color: var(--muted);
+  background: color-mix(in srgb, var(--plot-figure) 85%, transparent);
+  pointer-events: none;
+}
+.plot-errors {
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--danger) 25%, transparent);
+}
+figure.plot figcaption {
+  padding: 7px 14px;
+  font-size: 0.86em;
+  color: var(--muted);
+  text-align: center;
+  border-top: 1px solid var(--line);
+}
+figure.plot:fullscreen { display: flex; flex-direction: column; justify-content: center; border-radius: 0; background: var(--plot-figure); }
+
+/* ---------- imágenes ---------- */
+.md img.is-invert { background: #fff; }
+:root[data-theme="noche"] .md img.is-invert,
+:root:not([data-theme]) .md img.is-invert { filter: invert(0.9) hue-rotate(180deg); background: #fff; }
+
+/* ---------- índice: teoremas, definiciones y ejemplos ---------- */
+.toc li.lv4 a { padding-left: 24px; font-size: 12px; color: var(--faint); }
+.toc li.lv4 a::before { content: "◆"; font-size: 0.7em; margin-right: 6px; color: var(--c, var(--faint)); vertical-align: 1px; }
+.toc li.is-thm { --c: var(--thm); }
+.toc li.is-def { --c: var(--def); }
+.toc li.is-example, .toc li.is-exercise { --c: var(--example); }
+
+/* ---------- editor: barra de fórmula ---------- */
+.editor-col { display: flex; flex-direction: column; min-height: 0; min-width: 0; border-right: 1px solid var(--line); }
+.editor-col #editor { flex: 1; min-height: 0; border-right: 0; }
+.formula-bar {
+  flex: none;
+  max-height: 34%;
+  overflow: auto;
+  padding: 10px 18px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-raised);
+  text-align: center;
+  font-size: 17px;
+}
+.formula-bar mjx-container[display="true"] { margin: 0 !important; }
+.formula-bar mjx-container { color: var(--math); }
+.formula-bar.is-error { text-align: left; font-size: 13px; color: var(--danger); font-family: var(--mono); }
+.font-size { display: inline-flex; }
+.font-size .btn-icon { width: 30px; font-size: 12px; font-weight: 600; }
+.toolbar select optgroup { font-style: normal; }
+.toolbar select { max-width: 7.5em; }
+
+/* ---------- pantallas chicas (celular) ---------- */
+@media (max-width: 700px) {
+  .doc { padding: 20px 16px 64px; }
+  .doc-title { font-size: 1.7rem; }
+  .box.proof { padding-left: 0.75em; }
+  .box.thm, .box.def, .box.prop { padding: 0.6em 0.8em; }
+  .note-head { padding: 6px 10px; gap: 6px; }
+  .font-size { display: none; }
+  /* El mapa pasa a ser un panel que se abre con ☰ y se cierra al elegir una nota. */
+  .app, .app.side-hidden { grid-template-columns: 0 0 1fr; }
+  .side {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 60;
+    width: min(86vw, 340px);
+    box-shadow: var(--shadow);
+  }
+  .app.side-hidden .side { visibility: hidden; }
+  .splitter { display: none; }
+  .side-show { display: inline-block; }
+  .edit-panes { grid-template-columns: 1fr; }
+  .edit-panes .preview { display: none; }
+}

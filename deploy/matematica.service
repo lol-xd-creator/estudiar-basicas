@@ -1,0 +1,30 @@
+# Servicio systemd de la app. Lo instala deploy/setup-vps.sh en
+# /etc/systemd/system/matematica.service.
+[Unit]
+Description=Estudiar matemática (notas)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=matematica
+Group=matematica
+WorkingDirectory=/opt/matematica/app
+ExecStart=/usr/bin/node --env-file=/opt/matematica/.env server.js
+Restart=always
+RestartSec=3
+Environment=NODE_ENV=production
+
+# Endurecimiento: la app solo puede escribir en su carpeta de datos.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/matematica
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target
