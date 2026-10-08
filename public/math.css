@@ -24,6 +24,10 @@ mjx-merror { color: var(--danger) !important; background: color-mix(in srgb, var
   text-align: center;
 }
 .math-display mjx-container[display="true"] { margin: 0 !important; }
+/* \substack (n→∞ arriba de m→∞ debajo de un lim o una ∑): con la fuente
+   Pagella, MathJax les da a los renglones un alto que no alcanza y se
+   pisan. Un poco de aire arriba y abajo de cada renglón los separa. */
+mjx-mtable[data-latex="{subarray}"] mjx-mtd { padding-block: 0.15em !important; }
 .math-display.is-inline { display: block; }
 
 /* Resaltados \hl \hlb \hlc: lo que cambia de un paso al siguiente */

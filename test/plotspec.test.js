@@ -8,7 +8,9 @@ import { parseSpec } from "../public/js/plotspec.js";
 const PLOT = /^```(grafico3d|grafica3d|plot3d|grafico|grafica|plot|grafico2d|plot2d)\s*\n([\s\S]*?)\n```/gm;
 const files = [
   ...readdirSync(new URL("../src/seed/", import.meta.url)).map((f) => new URL(`../src/seed/${f}`, import.meta.url)),
-  ...readdirSync(new URL("../contenido/am2/notas/", import.meta.url)).map((f) => new URL(`../contenido/am2/notas/${f}`, import.meta.url)),
+  ...readdirSync(new URL("../contenido/", import.meta.url)).flatMap((d) =>
+    readdirSync(new URL(`../contenido/${d}/notas/`, import.meta.url)).map((f) => new URL(`../contenido/${d}/notas/${f}`, import.meta.url)),
+  ),
 ];
 
 test("los gráficos de la guía y del contenido no tienen errores", () => {

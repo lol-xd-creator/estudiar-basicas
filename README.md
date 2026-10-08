@@ -32,10 +32,11 @@ Abre en <http://localhost:8091> (o doble clic en `iniciar.cmd`). Los datos queda
 
 ## Contenido
 
-`contenido/am2/notas/` tiene las notas de AM2 (Integrales dobles), transcriptas del apunte. Para cargarlas con la app corriendo:
+`contenido/am2/notas/` tiene las notas de AM2 (Integrales dobles), transcriptas del apunte. `contenido/am2-resumen/notas/` es un resumen del mismo apunte para estudiarlo en una hora y media (plan de lecturas, ejemplos con la solución plegada y preguntas de repaso). Para cargarlas con la app corriendo:
 
 ```bash
 node contenido/am2/cargar.mjs http://localhost:8091
+node contenido/am2-resumen/cargar.mjs http://localhost:8091
 ```
 
 ## En un VPS
