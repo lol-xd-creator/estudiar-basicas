@@ -14,7 +14,9 @@ const DATA = resolve(ROOT, process.env.DATA_DIR || "data");
 const DEST = resolve(process.argv[2] || join(DATA, "..", "backups"));
 const KEEP = Number(process.argv[3]) || 14;
 
-const stamp = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 16);
+// Con segundos: dos backups en el mismo minuto (bajar-backup.sh dos veces
+// seguidas) no chocan.
+const stamp = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 19);
 const target = join(DEST, `matematica-${stamp}`);
 mkdirSync(target, { recursive: true });
 

@@ -97,6 +97,12 @@ mjx-merror { color: var(--danger) !important; background: color-mix(in srgb, var
 .paso-just mjx-container { color: inherit; }
 /* En los pasos cada lado queda en un renglon (la grilla ya alinea). */
 .paso-lhs mjx-container, .paso-rhs mjx-container, .paso-rel mjx-container { white-space: nowrap; }
+/* En pantallas angostas una fórmula larga se parte en renglones, y MathJax
+   los deja pegados: las fracciones de uno tocaban las del siguiente. Cada
+   pedazo lleva aire arriba y abajo, y el margen negativo de la celda lo
+   descuenta, así que si la fórmula entra en un renglón el paso no cambia. */
+.paso :is(.paso-lhs, .paso-rhs) mjx-math[breakable] > mjx-mstyle > :not(mjx-break) { margin-block: 0.2em; }
+.paso :is(.paso-lhs, .paso-rhs):has(mjx-math[breakable]) { margin-block: -0.2em; }
 .paso-tag { color: var(--faint); padding-left: 0.6em; }
 .paso.is-text { display: block; padding: 0.55em 0.45em 0.15em; }
 .paso-text { color: var(--text); font-style: italic; }

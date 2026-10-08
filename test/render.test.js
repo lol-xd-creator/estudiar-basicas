@@ -29,6 +29,12 @@ test("ecuaciones numeradas y citas", () => {
   assert.match(html, /data-target="eq-f"[^>]*>.*\(1\)/s); // la cita dentro de una fórmula
 });
 
+test("```math se numera y se cita como $$", () => {
+  const { html } = renderNote("```math\n" + R`G = 2 \label{g}` + "\n```\n\n" + R`Ver \eqref{g}.`);
+  assert.match(html, /<div class="math-display" id="eq-g" data-line="0"><span class="tex" data-d="1">G = 2 \\tag\{1\}<\/span>/);
+  assert.match(html, /<a href="#eq-g" class="ref" data-ref="g" data-target="eq-g">\(1\)<\/a>/);
+});
+
 test("teoremas numerados, H) / T) y referencias", () => {
   const src = "::: teorema Fubini {#fub}\nH) $f$ integrable\nT) vale\n:::\n\n::: teorema\nOtro\n:::\n\n" + R`Ver \ref{fub}.`;
   const { html, headings } = renderNote(src);

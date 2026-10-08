@@ -400,14 +400,12 @@ md.renderer.rules.pasos = (tokens, idx, _o, env) => {
 
 const PLOT2D = new Set(["grafico", "grafica", "plot", "grafico2d", "plot2d"]);
 const PLOT3D = new Set(["grafico3d", "grafica3d", "plot3d"]);
+const MATH_FENCE = new Set(["math", "latex", "tex"]); // pasan a math_block en "numbering"
 
 md.renderer.rules.fence = (tokens, idx, _o, env) => {
   const t = tokens[idx];
   const lang = normKind(t.info.trim().split(/\s+/)[0] || "");
   const code = t.content.replace(/\n$/, "");
-  if (lang === "math" || lang === "latex" || lang === "tex") {
-    return `<div class="math-display"${lineAttr(t)}>${tex(code, true, env)}</div>\n`;
-  }
   if (PLOT2D.has(lang) || PLOT3D.has(lang)) {
     const title = code.match(/^\s*t[ií]tulo\s*:\s*(.+)$/im)?.[1];
     return (
@@ -511,6 +509,11 @@ md.core.ruler.after("split_ht", "numbering", (state) => {
   state.tokens.forEach((t, i) => {
     if (t.map && ["paragraph_open", "heading_open", "bullet_list_open", "ordered_list_open", "blockquote_open", "table_open", "hr", "code_block"].includes(t.type)) {
       t.attrSet("data-line", String(t.map[0]));
+    }
+    // ```math es lo mismo que $$ … $$ (también se numera con \label).
+    if (t.type === "fence" && MATH_FENCE.has(normKind(t.info.trim().split(/\s+/)[0] || ""))) {
+      t.type = "math_block";
+      t.content = t.content.replace(/\n$/, "");
     }
     if (t.type === "math_block") {
       t.content = t.content.replace(/\\label\{([^}]*)\}/, (_, k) => {

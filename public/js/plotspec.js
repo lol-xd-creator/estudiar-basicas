@@ -206,7 +206,9 @@ function parseObject3D(src, item) {
 }
 
 function keywordObject(kw, rest, item, dim) {
-  const pts = tuples(rest).map((t) => parseTuple(t).map((c) => evalConst(c)));
+  // Las coordenadas se buscan fuera de las comillas: en texto (a, b) "$F(x)$"
+  // el (x) es parte del texto, no un punto.
+  const pts = tuples(rest.replace(/"[^"]*"/g, "")).map((t) => parseTuple(t).map((c) => evalConst(c)));
   if (pts.some((p) => p.length !== dim)) throw new ExprError(`en ${dim}D los puntos tienen ${dim} coordenadas`);
   if (kw === "punto") {
     if (pts.length !== 1) throw new ExprError("punto (a, b)");
