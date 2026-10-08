@@ -29,11 +29,6 @@ mjx-merror { color: var(--danger) !important; background: color-mix(in srgb, var
 .hl-b { background: var(--hl-b); }
 .hl-c { background: var(--hl-c); }
 
-/* Errores de LaTeX: se ve el código y qué falla */
-.math-error { color: var(--danger); background: color-mix(in srgb, var(--danger) 9%, transparent); border-radius: 4px; padding: 0.05em 0.35em; font-size: 0.85em; }
-span.math-error { display: inline-block; text-align: left; padding: 0.4em 0.7em; }
-.math-error code { font-family: var(--mono); white-space: pre-wrap; }
-.math-error-msg { display: block; font-size: 0.85em; margin-top: 0.2em; opacity: 0.85; }
 .ref-missing { color: var(--danger); }
 
 /* Citas (1), Teorema 2 … */

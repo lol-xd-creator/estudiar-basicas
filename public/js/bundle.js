@@ -3,7 +3,7 @@
 // módulo pasa a ser una función que devuelve sus exports.
 
 // En orden de dependencias.
-export const RUNTIME_MODULES = ["macros.js", "mathexpr.js", "plotcommon.js", "plotspec.js", "plot2d.js", "plot3d.js", "plots.js", "enhance.js"];
+export const RUNTIME_MODULES = ["math.js", "mathexpr.js", "plotcommon.js", "plotspec.js", "plot2d.js", "plot3d.js", "plots.js", "enhance.js"];
 
 export async function bundleModules(fetchText) {
   let out = "const __m = {};\n";

@@ -1,28 +1,24 @@
-// Pruebas del render de notas (Markdown + KaTeX) y del empaquetado del HTML
-// descargado. render.js espera markdown-it y KaTeX como globales del
-// navegador: acá se cargan desde node_modules.
+// Pruebas del render de notas (Markdown + marcadores de fórmula) y del empaquetado del HTML
+// descargado. render.js espera markdown-it como global del navegador y math.js un
+// document (para el evento de copiar): acá se simulan. Las fórmulas quedan
+// como marcadores <span class="tex">; dibujarlas es cosa del navegador.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { Script } from "node:vm";
 import markdownit from "markdown-it";
-import katex from "katex";
 
-globalThis.window = { markdownit, katex };
+globalThis.window = { markdownit };
+globalThis.document = { addEventListener() {} };
 const { renderNote, splitRel } = await import("../public/js/render.js");
 const { bundleModules } = await import("../public/js/bundle.js");
 const R = String.raw;
 
 test("fórmulas en el texto y centradas", () => {
   const { html } = renderNote(R`La integral $\iint_R f\,\dA$ cuesta $5 y $10.` + "\n\n$$\n" + R`\int_a^b F(x)\,\dx` + "\n$$");
-  assert.match(html, /class="katex"/);
-  assert.match(html, /class="math-display"/);
+  assert.match(html, /<span class="tex" data-d="0">\\iint_R f\\,\\dA<\/span>/);
+  assert.match(html, /class="math-display"[^>]*><span class="tex" data-d="1">/);
   assert.match(html, /cuesta \$5 y \$10/); // los precios no son fórmulas
-});
-
-test("errores de LaTeX visibles", () => {
-  const { html } = renderNote("$$\n" + R`\frac{1}{` + "\n$$");
-  assert.match(html, /math-error/);
 });
 
 test("ecuaciones numeradas y citas", () => {
@@ -60,14 +56,14 @@ test("pasos: relación alineada, justificación y narración", () => {
   assert.equal(splitRel(R`\left| x \right|`).rel, "");
   const { html } = renderNote("::: pasos\n// Primero:\nA = B // por $x$\n:::");
   assert.match(html, /paso is-text/);
-  assert.match(html, /paso-just"><span>por <span class="katex">/);
+  assert.match(html, /paso-just"><span>por <span class="tex"/);
 });
 
 test("gráficos: la figura lleva la especificación y el título", () => {
   const { html } = renderNote("```grafico3d\ntitulo: Sólido $S$\n0 <= z <= 1, x^2 + y^2 <= 1\n```");
   assert.match(html, /<figure class="plot" data-dim="3"/);
   assert.match(html, /<pre class="plot-src">/);
-  assert.match(html, /<figcaption>Sólido <span class="katex">/);
+  assert.match(html, /<figcaption>Sólido <span class="tex"/);
 });
 
 test("el empaquetado del HTML descargado es JavaScript válido", async () => {

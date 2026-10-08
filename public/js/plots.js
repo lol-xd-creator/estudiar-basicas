@@ -68,7 +68,7 @@ function unmount(fig) {
 }
 
 // Redibujar todo al cambiar de tema o cuando terminan de cargar las fuentes
-// (los nombres de los ejes usan la de KaTeX).
+// (los nombres de los ejes usan una fuente del sistema).
 let watching = false;
 function watchTheme() {
   if (watching) return;
@@ -80,7 +80,7 @@ function watchTheme() {
     }
   };
   new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-  document.fonts?.load('italic 16px "KaTeX_Math"').then(redraw, () => {});
+  document.fonts?.ready.then(redraw, () => {});
   document.addEventListener("fullscreenchange", () => {
     for (const fig of live) if (fig.isConnected) fig.__plot.resize();
   });

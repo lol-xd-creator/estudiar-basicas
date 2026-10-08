@@ -167,7 +167,7 @@
 /* Detalles de cada tema */
 .main { background: var(--page-glow), var(--bg); }
 .brand { font-family: var(--serif); font-weight: 600; font-size: 15.5px; }
-.brand-mark { font-family: "KaTeX_Main", var(--serif); font-style: italic; font-size: 17px; line-height: 1; padding: 1px 7px 3px; color: var(--accent); background: var(--accent-soft); }
+.brand-mark { font-family: var(--serif); font-style: italic; font-size: 17px; line-height: 1; padding: 1px 7px 3px; color: var(--accent); background: var(--accent-soft); }
 .row.is-selected { box-shadow: inset 2px 0 0 var(--accent); }
 .md a, .children a:hover { color: var(--accent); }
 .md h2 { color: var(--text-strong); }

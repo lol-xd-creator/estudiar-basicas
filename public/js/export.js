@@ -1,11 +1,14 @@
 // Descarga todo el mapa como un único HTML autocontenido: árbol, todas las
-// notas ya renderizadas (fórmulas incluidas), imágenes y fuentes de KaTeX
+// notas ya renderizadas (fórmulas incluidas), imágenes y fuentes de MathJax
 // embebidas en base64, los estilos y los dos temas (día / noche). Lleva
 // también el motor de gráficos y las demostraciones paso a paso, así que
 // los gráficos se pueden girar igual que en la app. Funciona sin internet.
 import { api } from "./api.js";
 import { renderNote } from "./render.js";
 import { bundleModules } from "./bundle.js";
+import { typesetMath, mathHTML, mathEntries } from "./math.js";
+import { parseSpec } from "./plotspec.js";
+import { labelFormulas } from "./plotcommon.js";
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const noScriptEnd = (s) => s.replace(/<\/script/gi, "<\\/script");
@@ -43,11 +46,18 @@ function treeHTML(kids, parentId, depth) {
   );
 }
 
-// El CSS de KaTeX con sus fuentes embebidas.
-async function katexCSS() {
-  let css = await fetch("vendor/katex/katex.min.css").then((r) => r.text());
-  const fonts = [...new Set(css.match(/fonts\/[\w-]+\.woff2/g) || [])];
-  for (const f of fonts) css = css.split(`url(${f})`).join(`url(${await toDataURL("vendor/katex/" + f)})`);
+// El CSS de MathJax (el de las fórmulas ya dibujadas) con sus fuentes
+// embebidas. Hay que llamarla después de dibujar todo: las fuentes se cargan
+// a medida que las fórmulas las usan. Las reglas de los símbolos que se
+// cargan sobre la marcha se agregan con insertRule, y no aparecen en el
+// textContent de la hoja: por eso se lee cssRules.
+async function mathCSS() {
+  let css = [...window.MathJax.chtmlStylesheet().sheet.cssRules].map((r) => r.cssText).join("\n");
+  const urls = [...new Set([...css.matchAll(/url\(\s*["']?([^"')]+\.woff2)["']?\s*\)/g)].map((m) => m[1]))];
+  for (const u of urls) {
+    const data = await toDataURL(u);
+    css = css.split(u).join(data);
+  }
   return css;
 }
 
@@ -71,12 +81,26 @@ export async function downloadMap(onProgress = () => {}) {
   // Notas renderizadas, con imágenes en base64, ids únicos y [[links]] resueltos.
   const images = new Map();
   const sections = [];
+  const formulas = new Set(); // fórmulas de etiquetas de gráficos
+  // Contenedor fuera de pantalla con el ancho de la vista: las fórmulas
+  // centradas se parten en renglones según el ancho disponible.
+  const width = document.querySelector(".md")?.clientWidth || 720;
+  const stage = document.createElement("div");
+  stage.className = "md";
+  stage.style.cssText = `position:absolute;left:-99999px;top:0;visibility:hidden;width:${width}px`;
+  document.body.append(stage);
   let i = 0;
   for (const n of list) {
     onProgress(`Notas ${++i}/${list.length}…`);
     const note = await api.get(n.id);
-    const div = document.createElement("div");
+    const div = stage;
     div.innerHTML = renderNote(note.content).html;
+    await typesetMath(div);
+    for (const pre of div.querySelectorAll("figure.plot .plot-src")) {
+      const spec = parseSpec(pre.textContent, Number(pre.closest("figure").dataset.dim) === 3 ? 3 : 2);
+      const texts = [spec.opts.titulo, ...spec.items.flatMap((it) => [it.label, it.text])];
+      for (const t of texts) if (t) for (const f of labelFormulas(t)) formulas.add(f);
+    }
     const pre = `n${i}-`;
     for (const el of div.querySelectorAll("[id]")) el.id = pre + el.id;
     for (const el of div.querySelectorAll("[data-target]")) el.dataset.target = pre + el.dataset.target;
@@ -101,19 +125,33 @@ export async function downloadMap(onProgress = () => {}) {
     const crumbs = pathOf(n.id)
       .map((p) => `<a href="#${p.id}">${esc(p.title)}</a>`)
       .join('<span class="crumb-sep">/</span>');
+    const body = div.innerHTML;
     sections.push(
       `<section class="note-x" id="${n.id}" data-crumbs="${esc(crumbs)}" hidden>` +
-        `<article class="doc"><h1 class="doc-title">${esc(n.title)}</h1><div class="md">${div.innerHTML}</div>` +
+        `<article class="doc"><h1 class="doc-title">${esc(n.title)}</h1><div class="md">${body}</div>` +
         (children ? `<nav class="children"><h2>Subnotas</h2><ul>${children}</ul></nav>` : "") +
         `</article></section>`,
     );
   }
 
+  stage.remove();
+
+  // Fórmulas de las etiquetas de los gráficos: se dibujan acá y viajan en el
+  // HTML (la página descargada no lleva MathJax).
+  onProgress("Fórmulas de los gráficos…");
+  const labels = document.createElement("div");
+  labels.className = "md";
+  labels.style.cssText = "position:absolute;left:-99999px;visibility:hidden";
+  labels.innerHTML = [...formulas].map((f) => mathHTML(f, false)).join(" ");
+  document.body.append(labels);
+  await typesetMath(labels);
+  labels.remove();
+  const seed = Object.fromEntries(Object.entries(mathEntries()).filter(([k]) => k.startsWith("I:") && formulas.has(k.slice(2))));
+
   onProgress("Estilos y fuentes…");
   const text = (u) => fetch(u).then((r) => r.text());
-  const css = [await katexCSS(), ...(await Promise.all(["styles.css", "math.css", "themes.css"].map(text)))].join("\n");
+  const css = [await mathCSS(), ...(await Promise.all(["styles.css", "math.css", "themes.css"].map(text)))].join("\n");
   onProgress("Gráficos…");
-  const katexJS = await text("vendor/katex/katex.min.js");
   const modules = await bundleModules((f) => text("js/" + f));
   const theme = document.documentElement.dataset.theme || "noche";
   const first = (kids.get(null) || [])[0]?.id || "";
@@ -157,7 +195,7 @@ ${EXTRA_CSS}</style>
     </div>
   </main>
 </div>
-<script>${noScriptEnd(katexJS)}</script>
+<script>window.__MATH_SEED = ${noScriptEnd(JSON.stringify(seed))};</script>
 <script>${noScriptEnd(modules)}</script>
 <script>
 (${RUNTIME.toString()})(${JSON.stringify(first)});

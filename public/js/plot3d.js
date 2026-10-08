@@ -827,7 +827,7 @@ export class Plot3D {
       const dx = p[0] - q[0];
       const dy = p[1] - q[1];
       const len = Math.hypot(dx, dy) || 1;
-      ctx.font = 'italic 16px "KaTeX_Math", "Times New Roman", serif';
+      ctx.font = 'italic 16px "Palatino Linotype", Palatino, "Times New Roman", serif';
       ctx.fillStyle = rgba(C.text, 0.92);
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";

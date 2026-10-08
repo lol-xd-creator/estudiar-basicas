@@ -47,12 +47,20 @@
     },
     options: {
       enableMenu: false,
-      enableAssistiveMml: false,
       enableExplorer: false,
       enableSpeech: false,
       enableBraille: false,
       enableEnrichment: false,
     },
-    startup: { typeset: false },
+    startup: {
+      typeset: false,
+      // Los avisos de accesibilidad (voz, braille, explorador) arrancan un
+      // worker externo y no se pueden apagar desde `options`: se apagan acá.
+      ready: function () {
+        MathJax.startup.defaultReady();
+        var o = MathJax.startup.document.options;
+        o.enableEnrichment = o.enableSpeech = o.enableBraille = o.enableExplorer = false;
+      },
+    },
   };
 })();

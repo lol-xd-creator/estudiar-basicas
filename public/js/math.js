@@ -81,8 +81,9 @@ export const mathError = (root) => root.querySelector("mjx-merror")?.getAttribut
 // Para el HTML descargado: exportar y precargar el caché.
 export const mathEntries = () => Object.fromEntries([...cache].map(([k, el]) => [k, el.outerHTML]));
 function seed(entries) {
+  if (!entries) return;
   const t = document.createElement("template");
-  for (const [k, html] of Object.entries(entries || {})) {
+  for (const [k, html] of Object.entries(entries)) {
     t.innerHTML = html;
     cache.set(k, t.content.firstElementChild);
   }

@@ -1,6 +1,6 @@
 # Estudiar matemática
 
-Árbol de notas para estudiar análisis matemático y cálculo. Las notas son Markdown con fórmulas en LaTeX (KaTeX), hechas para que los desarrollos largos se lean mejor que en un apunte en PDF:
+Árbol de notas para estudiar análisis matemático y cálculo. Las notas son Markdown con fórmulas en LaTeX (MathJax), hechas para que los desarrollos largos se lean mejor que en un apunte en PDF:
 
 - **Pasos alineados** (`::: pasos`): una igualdad por renglón, los `=` en columna y, al lado de cada paso, por qué se hace.
 - **Demostraciones** que se pueden seguir **paso a paso** (→ o espacio) o plegar, con teoremas numerados, hipótesis y tesis marcadas, y ∎ al final.
@@ -28,7 +28,7 @@ Abre en <http://localhost:8091> (o doble clic en `iniciar.cmd`). Los datos queda
 | `npm run backup` | Copia de los datos en `backups/` |
 | `npm run password` | Definir la contraseña (para abrirla desde otra máquina o en el VPS) |
 | `npm test` | Pruebas |
-| `npm install && npm run vendor` | Actualizar KaTeX y markdown-it en `public/vendor/` (solo si hace falta) |
+| `npm install && npm run vendor` | Actualizar MathJax y markdown-it en `public/vendor/` (solo si hace falta) |
 
 ## En un VPS
 
@@ -42,8 +42,9 @@ Ver [DEPLOY.md](DEPLOY.md). Puede convivir con estudiar-desarrollo en el mismo s
 | `src/db.js` | Árbol de notas en SQLite (`node:sqlite`) |
 | `src/auth.js` | Login de un solo usuario (scrypt + cookie firmada + límite de intentos) |
 | `src/seed/` | Notas iniciales de una base vacía (la guía) |
-| `public/js/render.js` | Markdown + KaTeX: fórmulas, pasos, cajas, números de ecuación, citas |
-| `public/js/macros.js` | Atajos de LaTeX (`\R`, `\sen`, `\dx`, `\eval`, `\hl`…) |
+| `public/js/render.js` | Markdown: fórmulas, pasos, cajas, números de ecuación, citas |
+| `public/js/mathjax-config.js` | Configuración de MathJax y atajos de LaTeX (`\R`, `\sen`, `\dx`, `\eval`, `\hl`…) |
+| `public/js/math.js` | Dibuja las fórmulas (marcadores → MathJax) con caché; copiar como LaTeX |
 | `public/js/enhance.js` | Paso a paso, plegar demostraciones y popups de citas |
 | `public/js/mathexpr.js` | Expresiones de los gráficos ("como en el pizarrón"), sin `eval` |
 | `public/js/plotspec.js` | Lenguaje de los gráficos: deduce el tipo de cada renglón |

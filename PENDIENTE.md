@@ -12,26 +12,23 @@ El usuario eligió **MathJax 4 con la fuente Pagella** (tipo Palatino, igual que
 - `app.js`: `typesetMath` en la vista y la vista previa, barra de fórmula con `mathError`, se redibuja al cambiar el ancho de la ventana.
 - `index.html` y `math.css`: estilos de `mjx-container` en vez de `.katex`.
 
+## Hecho en la segunda tanda
+
+- `export.js` ya usa MathJax: renderiza cada nota fuera de pantalla con el ancho de la vista, embebe el CSS de MathJax con sus `.woff2` en base64 (se leen de `sheet.cssRules`: los símbolos dinámicos se agregan con `insertRule` y no aparecen en `textContent`) y precarga las fórmulas de las etiquetas de los gráficos en `window.__MATH_SEED`.
+- `bundle.js` empaqueta `math.js`; `macros.js` borrado.
+- `render.test.js` busca los marcadores `span class="tex"`.
+- `server.js`: ETag / 304 en los estáticos.
+- `math.css`: reglas `.math-error` borradas. README actualizado.
+- `mathjax-config.js`: se apagan voz / braille / explorador en `startup.ready`. Desde `options` no se apagan y arrancan un worker que la CSP bloquea, con lo que `typesetPromise` quedaba colgada para siempre.
+
 ## Falta
 
-1. **`public/js/export.js`** (descarga ⤓): todavía usa KaTeX. Hay que:
-   - renderizar cada nota en un contenedor fuera de pantalla (con el ancho de la vista) y esperar `typesetMath`;
-   - embeber `MathJax.chtmlStylesheet()` con sus `.woff2` en base64;
-   - precargar las fórmulas de las etiquetas de los gráficos: `parseSpec` + `labelFormulas` → `typesetMath` → `mathEntries()` → `window.__MATH_SEED` en el HTML;
-   - sacar `katexCSS` / `katexJS`.
-2. **`public/js/bundle.js`**: en `RUNTIME_MODULES` cambiar `macros.js` por `math.js`. Después borrar `public/js/macros.js`.
-3. **`test/render.test.js`**: no usa más KaTeX. Las pruebas tienen que buscar los marcadores `span class="tex"`.
-4. **`server.js`**: agregar ETag / 304 a los archivos estáticos (MathJax pesa ~2 MB y hoy se vuelve a bajar entero en cada visita).
-5. **`math.css`**: borrar las reglas viejas `.math-error`.
-6. **Probar en el navegador**:
+1. **Celular**: a 390 px de ancho `.main` queda con ancho 0 (la grilla de `#app` no tiene reglas para pantallas angostas) y no se ve nada. No es de la migración (`styles.css` no se tocó), pero hay que arreglarlo.
+2. **Probar a mano en el navegador** (ya se probó: vista, descarga ⤓ con gráficos y etiquetas, notas AM2):
    - pasos (en la comparación, un `\lim` con dos renglones debajo se pisaba con la `\sum` en columna angosta);
    - recuadros de resultado (clase `mjx-measuring`);
    - barra de fórmula con error;
-   - copiar fórmulas;
-   - etiquetas de gráficos;
-   - descarga ⤓;
-   - celular.
-7. **README**: cambiar las menciones a KaTeX y la tabla de estructura (`math.js`, `mathjax-config.js`).
+   - copiar fórmulas.
 
 ## Contenido
 

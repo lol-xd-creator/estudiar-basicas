@@ -193,10 +193,19 @@ async function file(req, res, path) {
   if (!full.startsWith(base + sep)) return send(res, 403, { error: "prohibido" });
   try {
     const data = await readFile(full);
-    res.writeHead(200, {
+    // ETag por contenido: el navegador revalida en cada visita y, si no
+    // cambió, recibe un 304 vacío (MathJax pesa ~2 MB).
+    const etag = `"${createHash("sha1").update(data).digest("base64url")}"`;
+    const headers = {
       "Content-Type": TYPES[extname(full)] || "application/octet-stream",
       "Cache-Control": media ? "private, max-age=86400" : "no-cache",
-    });
+      ETag: etag,
+    };
+    if (req.headers["if-none-match"] === etag) {
+      res.writeHead(304, headers);
+      return res.end();
+    }
+    res.writeHead(200, headers);
     res.end(req.method === "HEAD" ? undefined : data);
   } catch {
     res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
