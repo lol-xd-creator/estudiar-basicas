@@ -172,6 +172,7 @@ const BOXES = {
   teorema: ["thm", "Teorema", true], lema: ["thm", "Lema", true],
   proposicion: ["thm", "Proposición", true], corolario: ["thm", "Corolario", true],
   definicion: ["def", "Definición", true],
+  ley: ["thm", "Ley", false], leyes: ["thm", "Leyes", false],
   propiedad: ["prop", "Propiedad", false], propiedades: ["prop", "Propiedades", false],
   demostracion: ["proof", "Demostración", false], prueba: ["proof", "Demostración", false],
   idea: ["idea", "Idea", false],
@@ -278,7 +279,10 @@ md.renderer.rules.box_open = (tokens, idx, _o, env) => {
     return `<div class="box proof"${idAttr}${lineAttr(t)}><div class="box-title proof-head"><span class="box-kind">${title ? titleHTML : label}</span></div><div class="box-body">\n`;
   }
   let head = "";
-  if (label || titleHTML) {
+  if (kind === "ley" || kind === "leyes") {
+    // "Ley de Ohm", "Ley de los nudos (1ª de Kirchhoff)": el nombre forma parte del rótulo.
+    head = `<div class="box-title"><span class="box-kind">${esc(label)}${titleHTML ? " " + titleHTML : ""}</span></div>`;
+  } else if (label || titleHTML) {
     const sep = !titleHTML ? "" : THM_LIKE.has(cls) && label ? ` <span class="box-name">(${titleHTML})</span>` : label ? `<span class="box-name">. ${titleHTML}</span>` : `<span class="box-name">${titleHTML}</span>`;
     head = `<div class="box-title">${label ? `<span class="box-kind">${esc(label)}</span>` : ""}${sep}</div>`;
   }
@@ -359,12 +363,24 @@ function splitJust(line) {
   return [line.slice(0, m.index + m[1].length), m[2].trim()];
 }
 
+// Los & de alineación sobran (los pasos ya se alinean solos), pero los de
+// adentro de un \begin{…}…\end{…} (matrices, cases) separan columnas.
+function dropAlignAmps(s) {
+  let depth = 0;
+  return s.replace(/\\(begin|end)\{[^}]*\}|\\&|&/g, (m, be) => {
+    if (be === "begin") depth++;
+    else if (be === "end") depth = Math.max(0, depth - 1);
+    else if (m === "&" && depth === 0) return " ";
+    return m;
+  });
+}
+
 md.renderer.rules.pasos = (tokens, idx, _o, env) => {
   const t = tokens[idx];
   const raw = t.content.split("\n").filter((l) => l.trim());
   const rows = raw.map((line) => {
     let [math, just] = splitJust(line);
-    math = math.replace(/&/g, " ").replace(/\\\\\s*$/, "").trim();
+    math = dropAlignAmps(math).replace(/\\\\\s*$/, "").trim();
     let tag = "";
     math = math.replace(/\\label\{([^}]*)\}/, (_, k) => {
       const r = env.refs[k.trim()];
@@ -400,16 +416,18 @@ md.renderer.rules.pasos = (tokens, idx, _o, env) => {
 
 const PLOT2D = new Set(["grafico", "grafica", "plot", "grafico2d", "plot2d"]);
 const PLOT3D = new Set(["grafico3d", "grafica3d", "plot3d"]);
+const CIRCUIT = new Set(["circuito", "circuit"]);
 const MATH_FENCE = new Set(["math", "latex", "tex"]); // pasan a math_block en "numbering"
 
 md.renderer.rules.fence = (tokens, idx, _o, env) => {
   const t = tokens[idx];
   const lang = normKind(t.info.trim().split(/\s+/)[0] || "");
   const code = t.content.replace(/\n$/, "");
-  if (PLOT2D.has(lang) || PLOT3D.has(lang)) {
+  if (PLOT2D.has(lang) || PLOT3D.has(lang) || CIRCUIT.has(lang)) {
     const title = code.match(/^\s*t[ií]tulo\s*:\s*(.+)$/im)?.[1];
+    const dim = CIRCUIT.has(lang) ? "c" : PLOT3D.has(lang) ? 3 : 2;
     return (
-      `<figure class="plot" data-dim="${PLOT3D.has(lang) ? 3 : 2}"${lineAttr(t)}>` +
+      `<figure class="plot" data-dim="${dim}"${lineAttr(t)}>` +
       `<pre class="plot-src">${esc(code)}</pre>` +
       (title ? `<figcaption>${md.renderInline(title, env)}</figcaption>` : "") +
       `</figure>\n`

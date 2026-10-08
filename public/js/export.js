@@ -9,6 +9,7 @@ import { bundleModules } from "./bundle.js";
 import { typesetMath, mathHTML, mathEntries } from "./math.js";
 import { parseSpec } from "./plotspec.js";
 import { labelFormulas } from "./plotcommon.js";
+import { parseCircuit, circuitLabels } from "./circuitspec.js";
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const noScriptEnd = (s) => s.replace(/<\/script/gi, "<\\/script");
@@ -101,8 +102,13 @@ export async function downloadMap(onProgress = () => {}) {
     div.innerHTML = renderNote(note.content).html;
     await typesetMath(div);
     for (const pre of div.querySelectorAll("figure.plot .plot-src")) {
-      const spec = parseSpec(pre.textContent, Number(pre.closest("figure").dataset.dim) === 3 ? 3 : 2);
-      const texts = [spec.opts.titulo, ...spec.items.flatMap((it) => [it.label, it.text])];
+      const dim = pre.closest("figure").dataset.dim;
+      let texts;
+      if (dim === "c") texts = circuitLabels(parseCircuit(pre.textContent)); // incluye las corrientes calculadas
+      else {
+        const spec = parseSpec(pre.textContent, Number(dim) === 3 ? 3 : 2);
+        texts = [spec.opts.titulo, ...spec.items.flatMap((it) => [it.label, it.text])];
+      }
       for (const t of texts) if (t) for (const f of labelFormulas(t)) formulas.add(f);
     }
     const pre = `n${i}-`;

@@ -77,7 +77,7 @@ $$
 
 ## Gráficos en el plano
 
-Un bloque ` ```grafico ` con un objeto por renglón, escrito como en el pizarrón. Después de `;` van opciones: una etiqueta entre comillas, un color (`rojo`, `azul`, `verde`, `ambar`, `violeta`, `rosa`, `gris`), `punteada`, `gruesa`, `rayado`.
+Un bloque ` ```grafico ` con un objeto por renglón, escrito como en el pizarrón. Después de `;` van opciones: una etiqueta entre comillas, un color (`rojo`, `azul`, `verde`, `ambar`, `violeta`, `rosa`, `gris`), `punteada`, `gruesa`, `rayado`, `flecha` (en una curva, marca el sentido de recorrido: hacia donde crece $x$, $y$ o $t$).
 
 ````md
 ```grafico
@@ -108,7 +108,7 @@ y = -1 - x
 | `x^2 <= y <= sqrt(x)` · `1 <= r <= 2, 0 <= θ <= pi/2` | región (tipo 1, tipo 2, polar…) |
 | `(1, 2) ; "$P$"` · `segmento (0,0) (1,1)` · `vector …` · `poligono …` · `texto (1, 2) "$D_1$"` | puntos y figuras |
 
-Ajustes, uno por renglón: `x: -3..3`, `y: …`, `titulo: …`, `aspecto: libre`, `alto: 300`, `marcas: pi`, `grilla: no`, `leyenda: no`. Casi nunca hacen falta: el rango sale solo. Se escribe como en la cursada: `2x`, `x y`, `sen^2(x)`, `|x|`, `raiz(x)`, `e^(-x)`. Arrastrá para mover, Ctrl + ruedita para acercar, doble clic para volver.
+Ajustes, uno por renglón: `x: -3..3`, `y: …`, `titulo: …`, `aspecto: libre`, `alto: 300`, `marcas: pi`, `grilla: no`, `leyenda: no`, `ejes: u, v` (otros nombres para los ejes). Casi nunca hacen falta: el rango sale solo. Se escribe como en la cursada: `2x`, `x y`, `sen^2(x)`, `|x|`, `raiz(x)`, `e^(-x)`. Arrastrá para mover, Ctrl + ruedita para acercar, doble clic para volver.
 
 ## Gráficos en el espacio
 
@@ -143,6 +143,78 @@ z = 1 + x^2/4 + y^2/6 ; prismas 5x6
 x: 0..2
 y: 0..3
 ```
+
+## Campo eléctrico
+
+En un ` ```grafico `, las cargas y las placas dibujan solas sus líneas de campo: salen de las positivas y terminan en las negativas. Un brillo las recorre en el sentido del campo, más rápido donde el campo es más intenso.
+
+````md
+```grafico
+titulo: Dipolo
+carga (-1.5, 0) ; +1
+carga (1.5, 0) ; -1
+```
+````
+
+```grafico
+titulo: Dipolo
+carga (-1.5, 0) ; +1
+carga (1.5, 0) ; -1
+```
+
+| Escribís | Se dibuja |
+|---|---|
+| `carga (0, 0) ; +2` | carga puntual (el número es la carga, con su signo) |
+| `placa (-2, 1) (2, 1) ; +` | placa cargada (`+` o `−`); dos placas opuestas forman un capacitor |
+| `campo (y, -x)` | un campo cualquiera, dado por sus componentes $(E_x;\,E_y)$ |
+
+Ajustes: `lineas: 12` (más o menos líneas por carga) y `animar: no`. El botón **⏸** pausa el brillo; si el sistema tiene activado "reducir movimiento", no se anima.
+
+## Circuitos
+
+Un bloque ` ```circuito ` con un componente por renglón, entre puntos de una grilla ($y$ hacia arriba). Después de `;` van el valor (Ω para resistencias, V para baterías), una etiqueta entre comillas o el lado donde va la etiqueta (`arriba`, `abajo`, `izquierda`, `derecha`; si no se dice, lo de los bordes la lleva hacia afuera).
+
+````md
+```circuito
+titulo: Dos mallas
+cable (0,0) (0,4)
+R (0,4) (4,4) ; 2
+cable (4,4) (4,2)
+R (0,2) (2,2) ; 6
+bateria (4,2) (2,2) ; 10
+R (4,2) (4,0) ; 4
+bateria (0,0) (4,0) ; 14
+nodo (0,2) ; "a"
+corriente (0,2.6) (0,3.6) ; "$I_3$"
+malla (2,3) ; horaria
+```
+````
+
+```circuito
+titulo: Dos mallas
+cable (0,0) (0,4)
+R (0,4) (4,4) ; 2
+cable (4,4) (4,2)
+R (0,2) (2,2) ; 6
+bateria (4,2) (2,2) ; 10
+R (4,2) (4,0) ; 4
+bateria (0,0) (4,0) ; 14
+nodo (0,2) ; "a"
+corriente (0,2.6) (0,3.6) ; "$I_3$"
+malla (2,3) ; horaria
+```
+
+| Escribís | Se dibuja |
+|---|---|
+| `R (0,0) (2,0) ; 6` | resistencia de $6\,\Omega$ |
+| `bateria (0,0) (0,2) ; 12` | batería de $12\,\text{V}$, con el $+$ del lado del segundo punto; `; r=0,5` le agrega resistencia interna |
+| `cable (0,2) (3,2) (3,0)` | cable de uno o más tramos |
+| `capacitor` · `amperimetro` · `voltimetro` · `interruptor … ; cerrado` | otros componentes (entre dos puntos) |
+| `nodo (0,2) ; "a"` · `tierra (0,0)` · `etiqueta (1,1) "texto"` | nudos, tierra y textos |
+| `corriente (0,0.5) (0,1.5) ; "$I_1$"` | flecha con el sentido que proponés para la corriente |
+| `malla (1,1) ; horaria` | sentido de recorrido de una malla |
+
+**El brillo** recorre los cables en el sentido de la corriente. Si todas las resistencias y baterías tienen valor, la app resuelve el circuito con las leyes de Kirchhoff: el sentido es el real y el brillo va más rápido donde pasa más corriente. Si no, sigue tus flechas de corriente. El botón **I** muestra las corrientes calculadas: junto a cada flecha aparece su valor, y si da negativo, la corriente va al revés de lo propuesto. `flujo: electrones` invierte el brillo para ver el movimiento de los electrones.
 
 ## Imágenes
 

@@ -63,6 +63,13 @@
   --plot-low: #35598a;
   --plot-mid: #3f9288;
   --plot-high: #e2c272;
+  /* circuitos y campos */
+  --circuit-wire: #a9a395;
+  --circuit-comp: #ebe6da;
+  --circuit-current: #8db4d9;
+  --flow: #ffcf6b;
+  --carga-pos: #e8746f;
+  --carga-neg: #6fa8e8;
 
   --selection: rgba(214, 181, 109, 0.28);
   --scroll: #363e4a;
@@ -133,6 +140,13 @@
   --plot-low: #3d5f8c;
   --plot-mid: #5c9670;
   --plot-high: #d4a748;
+  /* circuitos y campos */
+  --circuit-wire: #5a5348;
+  --circuit-comp: #1d1b17;
+  --circuit-current: #2f5a87;
+  --flow: #e07b00;
+  --carga-pos: #b4483e;
+  --carga-neg: #2f5a87;
 
   --selection: rgba(47, 90, 135, 0.2);
   --scroll: #c4b9a2;

@@ -392,7 +392,9 @@ export class Plot3D {
       }
       case "curve": {
         const pts = this.sampleCurve(it);
-        for (let k = 0; k < pts.length - 1; k++) this.line(pts[k], pts[k + 1], col, it.style.has("thin") ? 1.5 : 2.6, { dashed: it.style.has("dashed") });
+        // Con "flecha", el tramo del medio lleva la punta: sentido de recorrido.
+        const mid = it.style.has("arrow") ? Math.floor((pts.length - 1) / 2) : -1;
+        for (let k = 0; k < pts.length - 1; k++) this.line(pts[k], pts[k + 1], col, it.style.has("thin") ? 1.5 : 2.6, { dashed: it.style.has("dashed"), arrow: k === mid });
         break;
       }
       case "segment": {

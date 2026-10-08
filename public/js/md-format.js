@@ -87,6 +87,8 @@ const BLOCKS = {
     "```grafico\ntitulo: ¦Región $D$¦\ny = 5 - x^2\ny = -1 - x\n-1 - x <= y <= 5 - x^2 ; \"$D$\"\n```\n",
   plot3d:
     "```grafico3d\ntitulo: ¦Sólido sobre $D$¦\n0 <= z <= 4 - x^2 - y^2, x^2 + y^2 <= 4\n```\n",
+  circuit:
+    "```circuito\ntitulo: ¦Circuito en serie¦\nbateria (0,0) (0,2) ; 12\nR (0,2) (3,2) ; 4\nR (3,2) (3,0) ; 2\ncable (3,0) (0,0)\ncorriente (0.8,2) (1.4,2) ; \"$I$\"\n```\n",
 };
 
 function template(ta, name) {
@@ -124,7 +126,7 @@ export function applyFormat(ta, action) {
     default:
       if (action in BLOCKS) {
         // Con texto seleccionado, el bloque lo envuelve.
-        if (sel && !action.startsWith("plot") && action !== "pasos") {
+        if (sel && !action.startsWith("plot") && action !== "circuit" && action !== "pasos") {
           const head = `::: ${action}\n`;
           return block(ta, `${head}${sel}\n:::\n`, [head.length, head.length + sel.length]);
         }

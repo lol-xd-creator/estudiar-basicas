@@ -28,7 +28,7 @@ const STYLE_WORDS = {
   transparente: "glass", flecha: "arrow", relleno: "fill", rellena: "fill", "sin-malla": "nomesh",
 };
 const RANGE_KEYS = { x: "x", y: "y", z: "z", t: "t", u: "u", v: "v", θ: "th", theta: "th", tita: "th" };
-const SETTINGS = new Set(["titulo", "título", "vista", "aspecto", "alto", "ejes", "grilla", "leyenda", "caja", "piso", "marcas", ...Object.keys(RANGE_KEYS)]);
+const SETTINGS = new Set(["titulo", "título", "vista", "aspecto", "alto", "ejes", "grilla", "leyenda", "caja", "piso", "marcas", "lineas", "animar", ...Object.keys(RANGE_KEYS)]);
 const YES = (s) => !/^(no|false|0|off|ocultar?)$/i.test(s.trim());
 
 const fn = (src) => {
@@ -116,7 +116,12 @@ function parseOptions(parts, item, opts) {
     else if ((m = o.match(/^corte\s+([xyz])\s*=\s*(.+)$/i))) (item.cuts ||= []).push({ axis: m[1], c: evalConst(m[2]) });
     else if ((m = o.match(/^prismas\s+(\d+)(?:\s*[x×]\s*(\d+))?$/i))) item.prisms = [+m[1], +(m[2] || m[1])];
     else if ((m = o.match(/^(\p{L}+)\s*:\s*(.+)$/u)) && RANGE_KEYS[m[1]]) (item.ranges ||= {})[RANGE_KEYS[m[1]]] = parseRange(m[2]);
-    else {
+    // Valor de una carga o de una placa: +2, -1, + o −.
+    else if ((m = o.match(/^([+\-−])\s*(\d*[.,]?\d*)$/)) || /^\d+([.,]\d+)?$/.test(o)) {
+      const sign = m && m[1] !== "+" ? -1 : 1;
+      const num = m ? m[2] : o;
+      item.q = sign * (num ? parseFloat(num.replace(",", ".")) : 1);
+    } else {
       for (const w of o.toLowerCase().split(/\s+/)) {
         if (w in COLOR_WORDS) {
           item.color = COLOR_WORDS[w];
@@ -133,7 +138,16 @@ function parseOptions(parts, item, opts) {
 // ---------- objetos ----------
 
 function parseObject2D(src, item) {
-  const kw = src.match(/^(punto|texto|segmento|vector|flecha|pol[ií]gono)\b\s*(.*)$/i);
+  // campo (Ex, Ey): un campo vectorial dado por fórmulas (en x e y).
+  const field = src.match(/^campo\s*(\(.*\))\s*$/i);
+  if (field) {
+    const comps = parseTuple(field[1]);
+    if (comps.length !== 2) throw new ExprError("campo (Ex, Ey): dos componentes");
+    const fs = comps.map(fn);
+    if (fs.some((f) => [...f.vars].some((v) => v !== "x" && v !== "y"))) throw new ExprError("un campo usa x e y");
+    return Object.assign(item, { kind: "field", fx: fs[0].f, fy: fs[1].f });
+  }
+  const kw = src.match(/^(punto|texto|segmento|vector|flecha|pol[ií]gono|carga|placa)\b\s*(.*)$/i);
   if (kw) return keywordObject(kw[1].toLowerCase(), kw[2], item, 2);
   if (src.startsWith("(")) {
     const comps = parseTuple(src);
@@ -224,6 +238,17 @@ function keywordObject(kw, rest, item, dim) {
     if (kw !== "segmento") item.style.add("arrow");
     return Object.assign(item, { kind: "segment", a: pts[0], b: pts[1] });
   }
+  // Cargas y placas: el campo eléctrico (líneas y brillo) lo calcula el gráfico.
+  if (kw === "carga") {
+    if (pts.length !== 1) throw new ExprError("carga (x, y) ; +1");
+    if (!item.q) throw new ExprError("a la carga le falta el valor (ejemplo: carga (0, 0) ; +2)");
+    return Object.assign(item, { kind: "charge", p: pts[0] });
+  }
+  if (kw === "placa") {
+    if (pts.length !== 2) throw new ExprError("placa (x1, y1) (x2, y2) ; +");
+    if (!item.q) throw new ExprError("a la placa le falta el signo (+ o −)");
+    return Object.assign(item, { kind: "plate", a: pts[0], b: pts[1] });
+  }
   if (pts.length < 3) throw new ExprError("un polígono necesita al menos 3 vértices");
   return Object.assign(item, { kind: "polygon", pts });
 }
@@ -279,5 +304,10 @@ function setting(opts, key, val) {
   } else if (key === "aspecto") opts.aspecto = val.toLowerCase();
   else if (key === "alto") opts.alto = Math.max(160, Math.min(900, evalConst(val)));
   else if (key === "marcas") opts.marcas = val.toLowerCase();
-  else opts[key] = YES(val);
+  else if (key === "lineas") opts.lineas = Math.max(2, Math.min(24, evalConst(val)));
+  else if (key === "ejes" && /^\s*\p{L}+\s*,\s*\p{L}+\s*$/u.test(val) && YES(val)) {
+    // ejes: u, v → ejes visibles, con esos nombres (solo en 2D).
+    opts.ejes = true;
+    opts.nombresEjes = splitTop(val, ",").map((p) => p.trim());
+  } else opts[key] = YES(val);
 }

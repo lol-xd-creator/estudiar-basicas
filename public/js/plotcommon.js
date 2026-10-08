@@ -15,6 +15,10 @@ export function themeColors() {
     low: get("--plot-low", "#2b7fa8"),
     mid: get("--plot-mid", "#34c76a"),
     high: get("--plot-high", "#e8d44d"),
+    // Campo eléctrico: brillo y cargas positivas / negativas.
+    flow: get("--flow", "#ffcf6b"),
+    cpos: get("--carga-pos", "#e8746f"),
+    cneg: get("--carga-neg", "#6fa8e8"),
     // Nombres de los ejes: la misma letra que el texto de las notas.
     serif: cs.getPropertyValue("--serif").trim() || "serif",
   };

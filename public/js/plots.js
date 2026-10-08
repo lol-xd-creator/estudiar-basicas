@@ -5,6 +5,8 @@
 import { parseSpec } from "./plotspec.js";
 import { Plot2D } from "./plot2d.js";
 import { Plot3D } from "./plot3d.js";
+import { parseCircuit } from "./circuitspec.js";
+import { CircuitView } from "./circuit.js";
 
 const live = new Set();
 
@@ -39,8 +41,11 @@ function mount(fig, src) {
   if (pre) pre.hidden = true;
   const caption = fig.querySelector("figcaption");
   try {
-    const spec = parseSpec(src, Number(fig.dataset.dim) === 3 ? 3 : 2);
-    fig.__plot = spec.dim === 3 ? new Plot3D(fig, spec) : new Plot2D(fig, spec);
+    if (fig.dataset.dim === "c") fig.__plot = new CircuitView(fig, parseCircuit(src));
+    else {
+      const spec = parseSpec(src, Number(fig.dataset.dim) === 3 ? 3 : 2);
+      fig.__plot = spec.dim === 3 ? new Plot3D(fig, spec) : new Plot2D(fig, spec);
+    }
   } catch (e) {
     console.error(e);
     const err = document.createElement("div");

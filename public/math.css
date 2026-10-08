@@ -189,9 +189,10 @@ mjx-mtable[data-latex="{subarray}"] mjx-mtd { padding-block: 0.15em !important; 
 }
 .proof-tools button:hover, .step-bar button:hover:not(:disabled) { color: var(--text-strong); border-color: var(--line-strong); background: var(--bg-hover); }
 .qed { text-align: right; color: var(--text-strong); font-size: 1.1em; line-height: 1; margin-top: -0.4em; }
-.proof.is-folded > .box-body, .proof.is-folded > .qed { display: none; }
-.proof.is-folded { padding-bottom: 0.2em; }
-.proof.is-folded .proof-head .box-kind::after { content: " …"; color: var(--faint); font-style: normal; }
+/* Plegar vale para demostraciones y para ejemplos o ejercicios con pasos. */
+.box.is-folded > .box-body, .box.is-folded > .qed { display: none; }
+.box.is-folded { padding-bottom: 0.2em; }
+.box.is-folded :is(.proof-head, .box-title) .box-kind::after { content: " …"; color: var(--faint); font-style: normal; }
 
 /* Paso a paso */
 .step-hidden { visibility: hidden; }
@@ -358,3 +359,53 @@ figure.plot:fullscreen { display: flex; flex-direction: column; justify-content:
   .edit-panes { grid-template-columns: 1fr; }
   .edit-panes .preview { display: none; }
 }
+
+/* ---------- circuitos ---------- */
+.circuit-svg { display: block; overflow: visible; }
+.c-wires polyline, .c-comps polyline, .c-comps line, .c-comps path {
+  fill: none;
+  stroke: var(--circuit-wire);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.c-comps polyline, .c-comps line { stroke: var(--circuit-comp); stroke-width: 2; }
+.c-comps .c-plate { stroke-width: 2.4; }
+.c-comps .c-plate.is-short { stroke-width: 4.4; stroke-linecap: butt; }
+.c-meter, .c-contact { fill: var(--plot-figure); stroke: var(--circuit-comp); stroke-width: 1.8; }
+.c-meter-letter, .c-sign { font: 600 13px var(--font); fill: var(--circuit-comp); text-anchor: middle; dominant-baseline: central; }
+.c-node { fill: var(--circuit-wire); }
+.c-arrow { fill: var(--circuit-current); }
+.c-mesh { fill: none; stroke: var(--circuit-current); stroke-width: 1.6; }
+/* Brillo: pulsos cortos que avanzan en el sentido de la corriente. */
+.c-pulse {
+  fill: none;
+  stroke: var(--flow);
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 3 15;
+  animation: c-flow linear infinite;
+  filter: drop-shadow(0 0 2px var(--flow)) drop-shadow(0 0 5px var(--flow));
+}
+@keyframes c-flow { to { stroke-dashoffset: -18; } }
+figure.plot.is-paused .c-pulse { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .c-pulse { animation: none; } }
+.circuit-label { color: var(--text); }
+.circuit-label.side-up { transform: translate(-50%, -100%); }
+.circuit-label.side-down { transform: translate(-50%, 0); }
+.circuit-label.side-left { transform: translate(-100%, -50%); }
+.circuit-label.side-right { transform: translate(0, -50%); }
+.circuit-label.side-center { transform: translate(-50%, -50%); }
+.circuit-label.side-upleft { transform: translate(-100%, -100%); font-style: italic; }
+.circuit-label.c-current { color: var(--circuit-current); }
+.circuit-label.cur-val { display: none; color: var(--accent); font-weight: 600; }
+figure.plot.show-currents .cur-val { display: block; }
+figure.plot.show-currents .cur-name { display: none; }
+
+/* ---------- campo eléctrico ---------- */
+.plot-anim { position: absolute; inset: 0; pointer-events: none; }
+.circuit-stage .plot-layer { overflow: visible; }
+/* Las etiquetas de los dibujos no se parten en renglones. */
+.plot-label { width: max-content; }
+.plot-label mjx-container { white-space: nowrap; }

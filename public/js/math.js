@@ -85,7 +85,17 @@ async function draw(list) {
     // marcador tiene que tener la del texto, no la monoespaciada.
     el.classList.add("is-drawing");
   }
-  await MJ.typesetPromise(live);
+  // En los pasos, una matriz (o cualquier \begin…\end) no se parte: MathJax
+  // mide la celda angosta de la grilla y apretaba las columnas hasta
+  // encimarlas. Esas se arman sin límite de ancho; la grilla scrollea.
+  const wide = live.filter((el) => el.closest(".pasos") && /\\begin\{/.test(el.dataset.tex));
+  for (const el of wide) {
+    const out = await MJ.tex2chtmlPromise(el.dataset.tex, { ...MJ.getMetricsFor(el, el.dataset.d === "1"), containerWidth: 1e5 });
+    el.replaceChildren(out);
+  }
+  // Agrega a la hoja de estilos los caracteres que usaron esas fórmulas.
+  if (wide.length) MJ.startup.document.updateDocument();
+  await MJ.typesetPromise(live.filter((el) => !wide.includes(el)));
   for (const el of live) {
     let out = el.querySelector("mjx-container");
     // Con una llave sin cerrar (\frac{1}{ a medio escribir) MathJax no

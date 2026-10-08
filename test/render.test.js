@@ -66,6 +66,14 @@ test("pasos: relación alineada, justificación y narración", () => {
   assert.match(html, /paso-just"><span>por <span class="tex"/);
 });
 
+test("pasos: los & de una matriz se mantienen; los de alineación, no", () => {
+  const { html } = renderNote(R`::: pasos
+J &= \begin{vmatrix} a & b \\ c & d \end{vmatrix}
+:::`);
+  assert.match(html, /a &amp; b/);
+  assert.doesNotMatch(html, /J &amp;/);
+});
+
 test("gráficos: la figura lleva la especificación y el título", () => {
   const { html } = renderNote("```grafico3d\ntitulo: Sólido $S$\n0 <= z <= 1, x^2 + y^2 <= 1\n```");
   assert.match(html, /<figure class="plot" data-dim="3"/);

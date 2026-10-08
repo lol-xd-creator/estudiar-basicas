@@ -1,4 +1,4 @@
-# Análisis Matemático II
+# AM2
 
 Apuntes teóricos de la materia, organizados por tema.
 

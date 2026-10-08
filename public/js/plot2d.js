@@ -4,8 +4,10 @@
 // capa HTML encima. Arrastrar mueve, Ctrl+ruedita acerca, doble clic vuelve.
 import { themeColors, rgba, renderLabel, ticks, fmtTick, piTicks, toolbar, fullscreenToggle, errorBox, rangeOf } from "./plotcommon.js";
 import { typesetMath } from "./math.js";
+import { chargeLines, formulaLines, FlowAnimator } from "./field.js";
 
 const TAU = Math.PI * 2;
+const FIELD = new Set(["charge", "plate", "field"]);
 const CURVES = new Set(["fx", "fy", "polar", "implicit", "param"]);
 
 export class Plot2D {
@@ -21,12 +23,25 @@ export class Plot2D {
     this.readout = el("div", "plot-readout");
     this.stage.append(this.canvas, this.layer, this.readout);
     fig.append(this.stage);
-    toolbar(this.stage, [
+    const tools = [
       ["+", "Acercar (Ctrl+ruedita)", () => this.zoom(0.7)],
       ["−", "Alejar", () => this.zoom(1 / 0.7)],
       ["⟲", "Vista inicial (doble clic)", () => this.reset()],
       ["⛶", "Pantalla completa", fullscreenToggle(fig, () => this.resize())],
-    ]);
+    ];
+    // Campo eléctrico: líneas de campo y un brillo que las recorre (en una
+    // capa aparte, para no redibujar el gráfico en cada cuadro).
+    this.fields = spec.items.filter((it) => FIELD.has(it.kind));
+    if (this.fields.length) {
+      this.animCanvas = el("canvas", "plot-anim");
+      this.stage.insertBefore(this.animCanvas, this.layer);
+      this.anim = new FlowAnimator(this.animCanvas, this.stage);
+      if (spec.opts.animar === false) this.anim.setPaused(true);
+      tools.push(["⏸", "Pausar el brillo del campo", () => this.toggleAnim()]);
+    }
+    const bar = toolbar(this.stage, tools);
+    this.animBtn = this.fields.length ? bar.lastChild : null;
+    if (this.anim?.paused) this.animBtn.textContent = "▶";
     this.base = this.initialView();
     this.touched = false;
     this.bind();
@@ -51,6 +66,9 @@ export class Plot2D {
     for (const it of items) {
       if (it.kind === "point" || it.kind === "text") add(...it.p);
       else if (it.kind === "segment") (add(...it.a), add(...it.b));
+      // Alrededor de cargas y placas, lugar para que se vean las líneas de campo.
+      else if (it.kind === "charge") (add(it.p[0] - 1.5, it.p[1] - 1.5), add(it.p[0] + 1.5, it.p[1] + 1.5));
+      else if (it.kind === "plate") for (const p of [it.a, it.b]) (add(p[0] - 1, p[1] - 1), add(p[0] + 1, p[1] + 1));
       else if (it.kind === "polygon") it.pts.forEach((p) => add(...p));
       else if (it.kind === "param" || it.kind === "polar") {
         const [a, b] = it.kind === "param" ? rangeOf(it, opts, ["t"], [0, TAU]) : rangeOf(it, opts, ["th", "t"], [0, TAU]);
@@ -185,6 +203,12 @@ export class Plot2D {
     this.canvas.width = Math.round(W * dpr);
     this.canvas.height = Math.round(H * dpr);
     this.canvas.style.height = H + "px";
+    if (this.animCanvas) {
+      this.animCanvas.width = this.canvas.width;
+      this.animCanvas.height = this.canvas.height;
+      this.animCanvas.style.width = W + "px";
+      this.animCanvas.style.height = H + "px";
+    }
     this.stage.style.height = H + "px";
     this.ctx = this.canvas.getContext("2d");
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -288,6 +312,7 @@ export class Plot2D {
     if (this.spec.opts.grilla) this.drawGrid();
     for (const it of items) if (it.kind === "region") this.drawRegion(it);
     for (const it of items) if (it.kind === "polygon") this.drawPolygon(it);
+    if (this.fields.length) this.drawField();
     if (this.spec.opts.ejes) this.drawAxes();
     for (const it of items) {
       if (it.kind === "fx" || it.kind === "fy") this.drawExplicit(it);
@@ -299,7 +324,98 @@ export class Plot2D {
       else if (it.kind === "point") this.drawPoint(it);
       else if (it.kind === "text") this.overlay.push({ x: this.sx(it.p[0]), y: this.sy(it.p[1]), html: this.label(it.text), cls: "is-text", color: C.text });
     }
+    for (const it of this.fields) if (it.kind !== "field") this.drawCharge(it);
     this.renderOverlay(C);
+  }
+
+  // ---------- campo eléctrico ----------
+
+  toggleAnim() {
+    this.anim.setPaused(!this.anim.paused);
+    this.animBtn.textContent = this.anim.paused ? "▶" : "⏸";
+    this.animBtn.title = this.anim.paused ? "Reanudar el brillo del campo" : "Pausar el brillo del campo";
+  }
+
+  // Líneas de campo (en coordenadas del gráfico, calculadas una vez con la
+  // vista inicial) con una flecha en el medio, y el brillo encima.
+  drawField() {
+    const { ctx, C } = this;
+    if (!this.fieldData) {
+      const v = this.home || this.view;
+      const lines = [];
+      if (this.fields.some((it) => it.kind !== "field")) lines.push(...chargeLines(this.fields, v, this.spec.opts.lineas || 8));
+      for (const it of this.fields.filter((it) => it.kind === "field")) lines.push(...formulaLines(it, v, { ...this.sc }));
+      this.fieldData = lines;
+    }
+    const mags = this.fieldData.flatMap((l) => l.mag).filter(Number.isFinite).sort((a, b) => a - b);
+    const ref = mags[Math.floor(mags.length / 2)] || 1;
+    const screen = [];
+    ctx.save();
+    ctx.strokeStyle = ctx.fillStyle = rgba(C.text, 0.45);
+    ctx.lineWidth = 1.2;
+    for (const l of this.fieldData) {
+      const pts = l.pts.map(([x, y]) => [this.sx(x), this.sy(y)]);
+      ctx.beginPath();
+      pts.forEach(([x, y], k) => (k ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+      ctx.stroke();
+      // Flecha a mitad de camino, en el sentido del campo.
+      let len = 0;
+      const seg = pts.map((p, k) => (k ? (len += Math.hypot(p[0] - pts[k - 1][0], p[1] - pts[k - 1][1])) : 0));
+      const k = seg.findIndex((s) => s >= len / 2);
+      if (k > 0 && len > 40) arrow(ctx, pts[k - 1][0], pts[k - 1][1], pts[k][0], pts[k][1], 8);
+      // Velocidad del brillo: crece con la intensidad del campo.
+      screen.push({ pts, speed: l.mag.map((m) => Math.max(14, Math.min(170, 55 * Math.sqrt((m || 0) / ref)))) });
+    }
+    ctx.restore();
+    const dark = C.bg[0] + C.bg[1] + C.bg[2] < 384;
+    this.anim.setLines(screen, rgba(C.flow), dark);
+  }
+
+  drawCharge(it) {
+    const { ctx, C } = this;
+    const col = it.q > 0 ? C.cpos : C.cneg;
+    ctx.save();
+    if (it.kind === "charge") {
+      const x = this.sx(it.p[0]);
+      const y = this.sy(it.p[1]);
+      const r = 9 + Math.min(5, Math.abs(it.q));
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, TAU);
+      ctx.fillStyle = rgba(col);
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = rgba(C.bg);
+      ctx.stroke();
+      ctx.fillStyle = rgba(C.bg);
+      ctx.font = `700 ${r + 4}px system-ui, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(it.q > 0 ? "+" : "−", x, y + 1);
+      if (it.label) this.overlay.push({ x: x + r, y: y - r, html: this.label(it.label), cls: "is-point", color: rgba(col) });
+    } else {
+      const [x1, y1, x2, y2] = [this.sx(it.a[0]), this.sy(it.a[1]), this.sx(it.b[0]), this.sy(it.b[1])];
+      ctx.strokeStyle = rgba(col);
+      ctx.lineWidth = 5;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      // Signos a lo largo de la placa.
+      const L = Math.hypot(x2 - x1, y2 - y1);
+      const n = Math.max(2, Math.floor(L / 34));
+      ctx.fillStyle = rgba(col);
+      ctx.font = "700 13px system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const [nx, ny] = [-(y2 - y1) / L, (x2 - x1) / L];
+      for (let k = 0; k < n; k++) {
+        const t = (k + 0.5) / n;
+        ctx.fillText(it.q > 0 ? "+" : "−", x1 + (x2 - x1) * t + nx * 11, y1 + (y2 - y1) * t + ny * 11);
+      }
+      if (it.label) this.overlay.push({ x: (x1 + x2) / 2 - nx * 16, y: (y1 + y2) / 2 - ny * 16, html: this.label(it.label), cls: "is-region", color: rgba(col) });
+    }
+    ctx.restore();
   }
 
   color(it, a) {
@@ -383,17 +499,18 @@ export class Plot2D {
       ctx.fillText("0", ox - 5, oy + 4);
     }
     // Nombres de los ejes
+    const names = this.spec.opts.nombresEjes || ["x", "y"];
     ctx.font = `italic 16px ${C.serif}`;
     ctx.fillStyle = rgba(C.text, 0.9);
     if (xIn) {
       ctx.textAlign = "right";
       ctx.textBaseline = "bottom";
-      ctx.fillText("x", W - 4, oy - 6);
+      ctx.fillText(names[0], W - 4, oy - 6);
     }
     if (yIn) {
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
-      ctx.fillText("y", ox + 7, 2);
+      ctx.fillText(names[1], ox + 7, 2);
     }
     ctx.restore();
   }
@@ -420,6 +537,7 @@ export class Plot2D {
     ctx.strokeStyle = this.color(it);
     ctx.beginPath();
     let prev = null;
+    const drawn = [];
     for (let k = 0; k <= n; k++) {
       const s = a + ((b - a) * k) / n;
       const v = ev(s);
@@ -446,8 +564,13 @@ export class Plot2D {
       if (prev) ctx.lineTo(px, py);
       else ctx.moveTo(px, py);
       prev = { s, v, along };
+      drawn.push([px, py]);
     }
     ctx.stroke();
+    if (it.style.has("arrow")) {
+      ctx.fillStyle = this.color(it);
+      midArrow(ctx, drawn);
+    }
     ctx.restore();
   }
 
@@ -461,6 +584,7 @@ export class Plot2D {
     ctx.strokeStyle = this.color(it);
     ctx.beginPath();
     let pen = false;
+    const drawn = [];
     for (let k = 0; k <= n; k++) {
       const t = a + ((b - a) * k) / n;
       let x, y;
@@ -481,8 +605,13 @@ export class Plot2D {
       if (pen) ctx.lineTo(this.sx(x), this.sy(y));
       else ctx.moveTo(this.sx(x), this.sy(y));
       pen = true;
+      drawn.push([this.sx(x), this.sy(y)]);
     }
     ctx.stroke();
+    if (it.style.has("arrow")) {
+      ctx.fillStyle = this.color(it);
+      midArrow(ctx, drawn);
+    }
     ctx.restore();
   }
 
@@ -716,6 +845,22 @@ function arrow(ctx, x1, y1, x2, y2, size = 9) {
   ctx.lineTo(x2 - size * Math.cos(a + 0.38), y2 - size * Math.sin(a + 0.38));
   ctx.closePath();
   ctx.fill();
+}
+
+// Punta de flecha a mitad de camino de una curva (pts en píxeles, en el
+// orden en que se recorre): marca el sentido de recorrido.
+function midArrow(ctx, pts, size = 11) {
+  if (pts.length < 2) return;
+  const len = [0];
+  for (let k = 1; k < pts.length; k++) len.push(len[k - 1] + Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]));
+  const half = len[len.length - 1] / 2;
+  let k = len.findIndex((l) => l >= half);
+  if (k < 1) k = 1;
+  // La dirección sale de unos píxeles antes, para que una curva cerrada no la tuerza.
+  let j = k - 1;
+  while (j > 0 && len[k] - len[j] < 6) j--;
+  ctx.setLineDash([]);
+  arrow(ctx, pts[j][0], pts[j][1], pts[k][0], pts[k][1], size);
 }
 
 const patterns = new Map();
