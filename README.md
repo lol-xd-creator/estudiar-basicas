@@ -30,6 +30,14 @@ Abre en <http://localhost:8091> (o doble clic en `iniciar.cmd`). Los datos queda
 | `npm test` | Pruebas |
 | `npm install && npm run vendor` | Actualizar MathJax y markdown-it en `public/vendor/` (solo si hace falta) |
 
+## Contenido
+
+`contenido/am2/notas/` tiene las notas de AM2 (Integrales dobles), transcriptas del apunte. Para cargarlas con la app corriendo:
+
+```bash
+node contenido/am2/cargar.mjs http://localhost:8091
+```
+
 ## En un VPS
 
 Ver [DEPLOY.md](DEPLOY.md). Puede convivir con estudiar-desarrollo en el mismo servidor.

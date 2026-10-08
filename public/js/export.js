@@ -82,18 +82,22 @@ export async function downloadMap(onProgress = () => {}) {
   const images = new Map();
   const sections = [];
   const formulas = new Set(); // fórmulas de etiquetas de gráficos
-  // Contenedor fuera de pantalla con el ancho de la vista: las fórmulas
-  // centradas se parten en renglones según el ancho disponible.
-  const width = document.querySelector(".md")?.clientWidth || 720;
+  // Las notas se dibujan fuera de pantalla, armadas como en la página
+  // descargada (.view > .doc > .md, con la letra normal) y con el ancho de
+  // la vista actual: las fórmulas centradas se parten en renglones según
+  // cuántos em entran a lo ancho.
   const stage = document.createElement("div");
-  stage.className = "md";
-  stage.style.cssText = `position:absolute;left:-99999px;top:0;visibility:hidden;width:${width}px`;
+  stage.className = "view";
+  stage.style.cssText =
+    "position:absolute;left:-99999px;top:0;height:auto;visibility:hidden;--doc-scale:1;" +
+    `width:${document.getElementById("view")?.clientWidth || 900}px`;
+  stage.innerHTML = '<article class="doc"><div class="md"></div></article>';
   document.body.append(stage);
+  const div = stage.querySelector(".md");
   let i = 0;
   for (const n of list) {
     onProgress(`Notas ${++i}/${list.length}…`);
     const note = await api.get(n.id);
-    const div = stage;
     div.innerHTML = renderNote(note.content).html;
     await typesetMath(div);
     for (const pre of div.querySelectorAll("figure.plot .plot-src")) {
@@ -240,6 +244,11 @@ function RUNTIME(first) {
   );
   syncTheme();
 
+  // En el celular el mapa es un panel encima de la nota (como en la app):
+  // arranca cerrado y se cierra al elegir una nota.
+  const phone = () => matchMedia("(max-width: 700px)").matches;
+  if (phone()) $("#app").classList.add("side-hidden");
+
   // Árbol
   const setOpen = (li, open) => {
     li.classList.toggle("closed", !open);
@@ -251,7 +260,10 @@ function RUNTIME(first) {
     if (!row) return;
     const li = row.parentElement;
     if (e.target.closest(".twisty")) setOpen(li, li.classList.contains("closed"));
-    else location.hash = row.dataset.id;
+    else {
+      location.hash = row.dataset.id;
+      if (phone()) $("#app").classList.add("side-hidden");
+    }
   });
   $("#expand-all").addEventListener("click", () => $$("#tree li").forEach((li) => $(":scope > ul", li) && setOpen(li, true)));
   $("#collapse-all").addEventListener("click", () => $$("#tree li").forEach((li) => $(":scope > ul", li) && setOpen(li, false)));

@@ -47,20 +47,15 @@
     },
     options: {
       enableMenu: false,
-      enableExplorer: false,
-      enableSpeech: false,
-      enableBraille: false,
-      enableEnrichment: false,
-    },
-    startup: {
-      typeset: false,
-      // Los avisos de accesibilidad (voz, braille, explorador) arrancan un
-      // worker externo y no se pueden apagar desde `options`: se apagan acá.
-      ready: function () {
-        MathJax.startup.defaultReady();
-        var o = MathJax.startup.document.options;
-        o.enableEnrichment = o.enableSpeech = o.enableBraille = o.enableExplorer = false;
+      // Sin lectura en voz, braille ni explorador: necesitan un worker que no
+      // se copia a vendor/ (y que la CSP no deja crear), y con ellos activos
+      // MathJax se queda esperándolo y no dibuja nada. El menú existe aunque
+      // esté oculto y pisa enableSpeech & cía. con sus propios ajustes, así
+      // que se apagan acá.
+      menuOptions: {
+        settings: { enrich: false, speech: false, braille: false, collapsible: false },
       },
     },
+    startup: { typeset: false },
   };
 })();

@@ -383,7 +383,7 @@ export class Plot2D {
       ctx.fillText("0", ox - 5, oy + 4);
     }
     // Nombres de los ejes
-    ctx.font = 'italic 16px "Palatino Linotype", Palatino, "Times New Roman", serif';
+    ctx.font = `italic 16px ${C.serif}`;
     ctx.fillStyle = rgba(C.text, 0.9);
     if (xIn) {
       ctx.textAlign = "right";

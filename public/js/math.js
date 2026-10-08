@@ -18,12 +18,28 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 
 export const mathHTML = (tex, display) => `<span class="tex" data-d="${display ? 1 : 0}">${esc(tex)}</span>`;
 
-// Clave del caché: las centradas dependen del ancho (de a 40 px).
+// Clave del caché. Las centradas dependen de cuántos em entran a lo ancho
+// (de a 2.5 em, unos 40 px con la letra normal): MathJax las corta según
+// eso, así que también cuenta el tamaño de letra.
 function keyOf(el) {
   const tex = el.textContent;
   if (el.dataset.d !== "1") return "I:" + tex;
-  return `D${Math.round((el.parentElement?.clientWidth || 0) / 40)}:` + tex;
+  const box = el.parentElement;
+  const em = (box && parseFloat(getComputedStyle(box).fontSize)) || 16;
+  return `D${Math.round((box?.clientWidth || 0) / em / 2.5)}:` + tex;
 }
+
+// Una nota puede definir atajos con \newcommand. Para MathJax valen en toda
+// la página, así que las fórmulas de una nota con definiciones se guardan
+// aparte (la clave lleva las definiciones) y, si hay algo nuevo que
+// dibujar, las definiciones vuelven a pasar por MathJax antes (otra nota
+// puede haber usado los mismos nombres).
+const DEFINES = /\\(?:newcommand|renewcommand|def|let|DeclareMathOperator)(?![a-zA-Z])/;
+const hash = (s) => {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+};
 
 // typesetMath reemplaza los marcadores de root; devuelve una promesa que se
 // cumple cuando terminó de dibujar los nuevos.
@@ -31,11 +47,15 @@ export function typesetMath(root) {
   // Mientras se mide, los recuadros de resultado ocupan todo el ancho (si no,
   // MathJax partiría la fórmula al ancho del código sin dibujar).
   root.classList.add("mjx-measuring");
+  const marks = [...root.querySelectorAll("span.tex")];
+  const defs = marks.filter((el) => DEFINES.test(el.textContent)).map((el) => el.textContent);
+  const scope = defs.length ? hash(defs.join("\n")) + "|" : "";
+  const keyed = marks.map((el) => [el, scope + keyOf(el)]);
+  const missing = keyed.some(([, key]) => !cache.has(key));
   const pending = [];
-  for (const el of root.querySelectorAll("span.tex")) {
-    const key = keyOf(el);
+  for (const [el, key] of keyed) {
     const hit = cache.get(key);
-    if (hit) el.replaceWith(hit.cloneNode(true));
+    if (hit && !(missing && DEFINES.test(el.textContent))) el.replaceWith(hit.cloneNode(true));
     else {
       el.dataset.key = key;
       pending.push(el);
@@ -61,11 +81,20 @@ async function draw(list) {
     const tex = el.textContent;
     el.dataset.tex = tex;
     el.textContent = el.dataset.d === "1" ? `\\[${tex}\\]` : `\\(${tex}\\)`;
+    // MathJax ajusta el tamaño de la fórmula a la letra que la rodea: el
+    // marcador tiene que tener la del texto, no la monoespaciada.
+    el.classList.add("is-drawing");
   }
   await MJ.typesetPromise(live);
   for (const el of live) {
-    const out = el.querySelector("mjx-container");
-    if (!out) continue;
+    let out = el.querySelector("mjx-container");
+    // Con una llave sin cerrar (\frac{1}{ a medio escribir) MathJax no
+    // encuentra dónde termina la fórmula y la deja como texto: se convierte
+    // directo, así se ve el error.
+    if (!out) {
+      out = await MJ.tex2chtmlPromise(el.dataset.tex, MJ.getMetricsFor(el, el.dataset.d === "1"));
+      el.replaceChildren(out);
+    }
     out.dataset.tex = el.dataset.tex;
     if (cache.size > 5000) cache.clear();
     cache.set(el.dataset.key, out.cloneNode(true));

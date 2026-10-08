@@ -134,19 +134,22 @@ function renderView(note, keepScroll) {
   renderChildren(note.id);
   renderToc(headings);
   els.view.scrollTop = keepScroll ? scroll : 0;
-  viewWidth = els.viewBody.clientWidth;
+  viewEms = emsOf(els.viewBody);
 }
 
-// Las fórmulas centradas se parten según el ancho: si la ventana cambia
-// bastante de ancho, se vuelve a dibujar la nota.
-let viewWidth = 0;
-let resizeTimer = 0;
-window.addEventListener("resize", () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    if (state.note && state.mode === "view" && Math.abs(els.viewBody.clientWidth - viewWidth) >= 40) renderView(state.note, true);
+// Las fórmulas centradas se parten según cuántos em entran a lo ancho: si
+// cambia bastante el ancho de la ventana o el tamaño de letra, se vuelve a
+// dibujar la nota.
+let viewEms = 0;
+let refitTimer = 0;
+const emsOf = (el) => el.clientWidth / (parseFloat(getComputedStyle(el).fontSize) || 16);
+function refitView() {
+  clearTimeout(refitTimer);
+  refitTimer = setTimeout(() => {
+    if (state.note && state.mode === "view" && Math.abs(emsOf(els.viewBody) - viewEms) >= 2.5) renderView(state.note, true);
   }, 300);
-});
+}
+window.addEventListener("resize", refitView);
 
 // renderChildren lista las subnotas al pie, para seguir leyendo en orden.
 function renderChildren(id) {
@@ -477,7 +480,10 @@ function setFontScale(v) {
 }
 let fontScale = setFontScale(Number(localStorage.getItem(FONT_KEY)) || 1);
 for (const b of document.querySelectorAll("[data-font]")) {
-  b.addEventListener("click", () => (fontScale = setFontScale(fontScale + Number(b.dataset.font) * 0.08)));
+  b.addEventListener("click", () => {
+    fontScale = setFontScale(fontScale + Number(b.dataset.font) * 0.08);
+    refitView();
+  });
 }
 
 // Atajos globales.

@@ -8,6 +8,9 @@
 /* Marcador de una formula que MathJax todavia no dibujo (o no pudo). */
 span.tex { font-family: var(--mono); font-size: 0.82em; color: var(--faint); white-space: pre-wrap; }
 span.tex[data-d="1"] { display: block; }
+/* Mientras MathJax dibuja, el marcador toma la letra del texto: MathJax la
+   mide para que la x de la fórmula tenga la misma altura que la del texto. */
+span.tex.is-drawing { font: inherit; }
 mjx-merror { color: var(--danger) !important; background: color-mix(in srgb, var(--danger) 10%, transparent) !important; border-radius: 4px; }
 /* Mientras MathJax mide el ancho, los recuadros de resultado ocupan todo el renglon. */
 .mjx-measuring .box.result { width: auto; }
@@ -326,8 +329,10 @@ figure.plot:fullscreen { display: flex; flex-direction: column; justify-content:
   .box.thm, .box.def, .box.prop { padding: 0.6em 0.8em; }
   .note-head { padding: 6px 10px; gap: 6px; }
   .font-size { display: none; }
-  /* El mapa pasa a ser un panel que se abre con ☰ y se cierra al elegir una nota. */
-  .app, .app.side-hidden { grid-template-columns: 0 0 1fr; }
+  /* El mapa pasa a ser un panel que se abre con ☰ y se cierra al elegir una nota.
+     Como el panel es fixed y el divisor no se muestra, la nota es lo único
+     que queda en la grilla: una sola columna. */
+  .app, .app.side-hidden { grid-template-columns: minmax(0, 1fr); }
   .side {
     position: fixed;
     inset: 0 auto 0 0;
@@ -335,7 +340,9 @@ figure.plot:fullscreen { display: flex; flex-direction: column; justify-content:
     width: min(86vw, 340px);
     box-shadow: var(--shadow);
   }
-  .app.side-hidden .side { visibility: hidden; }
+  /* display y no visibility: el "+" de la nota elegida tiene visibility
+     propia y se veía flotando sobre la nota. */
+  .app.side-hidden .side { display: none; }
   .splitter { display: none; }
   .side-show { display: inline-block; }
   .edit-panes { grid-template-columns: 1fr; }

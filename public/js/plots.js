@@ -68,7 +68,7 @@ function unmount(fig) {
 }
 
 // Redibujar todo al cambiar de tema o cuando terminan de cargar las fuentes
-// (los nombres de los ejes usan una fuente del sistema).
+// (los nombres de los ejes usan la letra de las notas).
 let watching = false;
 function watchTheme() {
   if (watching) return;

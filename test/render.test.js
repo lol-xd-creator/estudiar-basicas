@@ -1,7 +1,8 @@
-// Pruebas del render de notas (Markdown + marcadores de fórmula) y del empaquetado del HTML
-// descargado. render.js espera markdown-it como global del navegador y math.js un
-// document (para el evento de copiar): acá se simulan. Las fórmulas quedan
-// como marcadores <span class="tex">; dibujarlas es cosa del navegador.
+// Pruebas del render de notas (Markdown + marcadores de fórmula) y del
+// empaquetado del HTML descargado. render.js espera markdown-it como global
+// del navegador y math.js un document (para el evento de copiar): acá se
+// simulan. Las fórmulas quedan como marcadores <span class="tex">; las dibuja
+// MathJax en el navegador.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";

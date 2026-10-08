@@ -15,6 +15,8 @@ export function themeColors() {
     low: get("--plot-low", "#2b7fa8"),
     mid: get("--plot-mid", "#34c76a"),
     high: get("--plot-high", "#e8d44d"),
+    // Nombres de los ejes: la misma letra que el texto de las notas.
+    serif: cs.getPropertyValue("--serif").trim() || "serif",
   };
 }
 
