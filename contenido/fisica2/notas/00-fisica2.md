@@ -5,6 +5,7 @@ Resumen de Física II armado con las notas de clase:
 - **Teórico**: las clases teóricas, completadas con el libro (Serway, *Física para ciencias e ingeniería*, vol. 2), ordenadas por capítulo.
 - **Práctico**: los ejercicios de las clases prácticas, buscados en la guía de trabajos prácticos y resueltos paso a paso, ordenados por capítulo de la guía. Cada ejercicio tiene la solución plegada para intentarlo antes.
 
+- **Preguntas de repaso**: las respuestas a los cuestionarios de la cátedra (electrostática y electrodinámica, magnetismo), con links a la sección del teórico donde está cada una.
 - **Ejercicios modelo**: apuntes de apoyo para resolver ejercicios. Cada tipo de problema de la guía convertido en un método general, con unidades, conversiones, trampas y ejemplos, ordenado por capítulo de la guía.
 
 Teórico y práctico van en ramas separadas porque no siempre ven el mismo tema la misma semana. Dentro de cada rama hay **una carpeta por clase**, con la fecha adelante ("23/06 · …").

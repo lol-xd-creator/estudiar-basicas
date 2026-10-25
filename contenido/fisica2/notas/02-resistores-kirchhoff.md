@@ -60,7 +60,7 @@ $$
 :::
 
 ::: observacion
-En paralelo, $R_{eq}$ queda por debajo de la menor de las resistencias: **el límite lo pone la más chica**. Por ejemplo, con $R_1 = 10,Omega$ y $R_2 = 2,Omega$: $R_{eq} = rac{10cdot 2}{10 + 2} approx 1{,}67,Omega < 2,Omega$. En serie pasa lo contrario: $R_{eq}$ es mayor que la más grande.
+En paralelo, $R_{eq}$ queda por debajo de la menor de las resistencias: **el límite lo pone la más chica**. Por ejemplo, con $R_1 = 10\,\Omega$ y $R_2 = 2\,\Omega$: $R_{eq} = \frac{10\cdot 2}{10 + 2} \approx 1{,}67\,\Omega < 2\,\Omega$. En serie pasa lo contrario: $R_{eq}$ es mayor que la más grande.
 :::
 
 ## Leyes de Kirchhoff
