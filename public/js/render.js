@@ -14,6 +14,11 @@
 //   :::                      demostracion, idea, ejemplo, ejercicio, solucion,
 //                            propiedad, observacion, claves, resultado, ojo,
 //                            aclaracion (las cajas se pueden anidar)
+//   ::: pregunta Enunciado   opción múltiple: una lista con "- [x] correcta" y
+//   - [ ] … / - [x] …        "- [ ] incorrecta" (con varias [x], se marcan
+//   :::                      todas y se comprueba); una ::: solucion adentro
+//                            se abre al responder (ver enhance.js)
+//   ```python  ```pycon  ```salida   código Python (ver codeFigure, abajo)
 //   ```grafico / ```grafico3d   gráficos (ver plotspec.js)
 //   ![texto|60%](url)        imagen con ancho; |invertir la oscurece de noche
 //   [[Título de otra nota]]  link a otra nota del árbol
@@ -21,6 +26,7 @@
 // renderNote(src) → { html, headings }; después de insertar el HTML hay que
 // llamar a typesetMath (math.js) para dibujar las fórmulas.
 import { mathHTML } from "./math.js";
+import { highlightPython, highlightRepl, plainLines } from "./pyhighlight.js";
 
 const md = window.markdownit({ html: false, linkify: true, breaks: true, typographer: false });
 
@@ -178,6 +184,7 @@ const BOXES = {
   idea: ["idea", "Idea", false],
   observacion: ["note", "Observación", false], nota: ["note", "Nota", false],
   ejemplo: ["example", "Ejemplo", true], ejercicio: ["exercise", "Ejercicio", true],
+  pregunta: ["question", "Pregunta", true],
   solucion: ["details", "Solución", false], respuesta: ["details", "Respuesta", false], detalle: ["details", "Ver más", false],
   claves: ["key", "Claves", false], clave: ["key", "Clave", false],
   resultado: ["result", "", false], formula: ["result", "", false],
@@ -433,8 +440,37 @@ md.renderer.rules.fence = (tokens, idx, _o, env) => {
       `</figure>\n`
     );
   }
+  if (PYTHON.has(lang) || REPL.has(lang) || OUTPUT.has(lang)) return codeFigure(t, lang, code);
   return `<figure class="code"${lineAttr(t)}>${lang ? `<figcaption>${esc(lang)}</figcaption>` : ""}<pre><code>${esc(code)}</code></pre></figure>\n`;
 };
+
+// ```python [título] [estatico]  código con colores y números de renglón; se
+//                                puede ejecutar y editar (pyrun.js), salvo
+//                                con "estatico"
+// ```pycon / ```repl             sesión interactiva (>>> y ...)
+// ```salida                      lo que muestra la consola, sin colores
+const PYTHON = new Set(["python", "py", "python3"]);
+const REPL = new Set(["pycon", "repl", "consola"]);
+const OUTPUT = new Set(["salida", "output", "out", "terminal"]);
+const STATIC_FLAG = /^(estatico|norun|sin-ejecutar)$/;
+
+function codeFigure(t, lang, code) {
+  const words = t.info.trim().split(/\s+/).slice(1);
+  const runnable = PYTHON.has(lang) && !words.some((w) => STATIC_FLAG.test(normKind(w)));
+  const title = words.filter((w) => !STATIC_FLAG.test(normKind(w))).join(" ");
+  const kind = PYTHON.has(lang) ? "python" : REPL.has(lang) ? "repl" : "salida";
+  const body = kind === "python" ? highlightPython(code) : kind === "repl" ? highlightRepl(code) : plainLines(code);
+  const langName = { python: "Python", repl: "Consola de Python", salida: "Salida" }[kind];
+  const head =
+    `<figcaption>${title ? `<span class="code-title">${esc(title)}</span>` : ""}` +
+    `<span class="code-lang">${langName}</span></figcaption>`;
+  return (
+    `<figure class="code is-${kind}${kind === "salida" ? " is-term" : ""}"${runnable ? ' data-run="1"' : ""}${lineAttr(t)}>` +
+    head +
+    `<pre${kind === "python" ? ' class="numbered"' : ""}><code>${body}</code></pre>` +
+    `<pre class="code-src" hidden>${esc(code)}</pre></figure>\n`
+  );
+}
 
 // ---------- imágenes: ![texto|60%|invertir](url) ----------
 
@@ -451,6 +487,8 @@ md.renderer.rules.image = (tokens, idx, _o, env) => {
 };
 
 // ---------- [[links entre notas]] ----------
+// [[Título]], [[Título|texto]] y [[Título#Sección|texto]], donde la sección es
+// el texto de un título ## o ### de esa nota.
 
 md.inline.ruler.before("link", "wikilink", (state, silent) => {
   const src = state.src;
@@ -461,15 +499,18 @@ md.inline.ruler.before("link", "wikilink", (state, silent) => {
   if (!inner.trim() || inner.includes("\n")) return false;
   if (!silent) {
     const [target, label] = inner.split("|");
+    const [title, section = ""] = target.split("#");
     const tok = state.push("wikilink", "", 0);
-    tok.meta = { target: target.trim(), label: (label || target).trim() };
+    tok.meta = { target: title.trim(), section: section.trim(), label: (label || title).trim() };
   }
   state.pos = end + 2;
   return true;
 });
 md.renderer.rules.wikilink = (tokens, idx) => {
-  const { target, label } = tokens[idx].meta;
-  return `<a href="#" class="wikilink" data-note-title="${esc(target)}">${esc(label)}</a>`;
+  const { target, section, label } = tokens[idx].meta;
+  const sec = section ? ` data-section="${esc(headingId(section))}"` : "";
+  // El texto del link admite formato (*cursiva*, `código`).
+  return `<a href="#" class="wikilink" data-note-title="${esc(target)}"${sec}>${md.renderInline(label)}</a>`;
 };
 
 const linkOpen = md.renderer.rules.link_open || ((t, i, o, e, self) => self.renderToken(t, i, o));
@@ -486,6 +527,9 @@ md.renderer.rules.link_open = (tokens, idx, opts, env, self) => {
 
 const slug = (s) =>
   s.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "").replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "-") || "seccion";
+// El id de un título (sin $, *, _ ni `): el mismo que buscan los [[links#sección]].
+const headingText = (s) => s.replace(/\$([^$]*)\$/g, "$1").replace(/[*_`]/g, "");
+export const headingId = (s) => slug(headingText(s));
 
 // Dentro de un teorema, "H) …" y "T) …" en renglones seguidos son párrafos
 // separados (con breaks: true quedarían en uno solo).
@@ -572,7 +616,7 @@ md.core.ruler.after("split_ht", "numbering", (state) => {
         inl.content = inl.content.slice(m[0].length);
       }
     } else if (t.type === "heading_open") {
-      const text = state.tokens[i + 1].content.replace(/\$([^$]*)\$/g, "$1").replace(/[*_`]/g, "");
+      const text = headingText(state.tokens[i + 1].content);
       const id = uniq(slug(text));
       t.attrSet("id", id);
       env.headings.push({ level: Number(t.tag[1]), text, id });

@@ -209,12 +209,76 @@ malla (2,3) ; horaria
 | `R (0,0) (2,0) ; 6` | resistencia de $6\,\Omega$ |
 | `bateria (0,0) (0,2) ; 12` | batería de $12\,\text{V}$, con el $+$ del lado del segundo punto; `; r=0,5` le agrega resistencia interna |
 | `cable (0,2) (3,2) (3,0)` | cable de uno o más tramos |
-| `capacitor` · `amperimetro` · `voltimetro` · `interruptor … ; cerrado` | otros componentes (entre dos puntos) |
+| `capacitor` · `amperimetro` · `voltimetro` · `galvanometro` · `interruptor … ; cerrado` | otros componentes (entre dos puntos) |
 | `nodo (0,2) ; "a"` · `tierra (0,0)` · `etiqueta (1,1) "texto"` | nudos, tierra y textos |
 | `corriente (0,0.5) (0,1.5) ; "$I_1$"` | flecha con el sentido que proponés para la corriente |
 | `malla (1,1) ; horaria` | sentido de recorrido de una malla |
 
 **El brillo** recorre los cables en el sentido de la corriente. Si todas las resistencias y baterías tienen valor, la app resuelve el circuito con las leyes de Kirchhoff: el sentido es el real y el brillo va más rápido donde pasa más corriente. Si no, sigue tus flechas de corriente. El botón **I** muestra las corrientes calculadas: junto a cada flecha aparece su valor, y si da negativo, la corriente va al revés de lo propuesto. `flujo: electrones` invierte el brillo para ver el movimiento de los electrones.
+
+## Código Python
+
+Un bloque ```python se ve con colores y números de renglón, y trae tres botones:
+
+- **▶ Ejecutar** corre el código acá mismo, con Python de verdad (Pyodide, que viene con la app: no hace falta internet) y muestra lo que imprime abajo. Si hay un error, aparece el traceback en rojo. Cada ejecución arranca de cero, como un archivo nuevo. La primera vez tarda unos segundos en cargar Python.
+- **Editar** permite cambiar el código para probar variantes (`Ctrl+Enter` ejecuta, `Tab` pone 4 espacios). **Restaurar** vuelve al original. Los cambios no se guardan en la nota.
+- **Copiar** copia el código.
+
+```python foo.py
+def foo(x=[]):
+    x.append(1)
+    return x
+
+print(foo())
+print(foo())  # ¿[1] o [1, 1]?
+```
+
+| Escribís | Se ve |
+|---|---|
+| ` ```python ` | código que se puede ejecutar; lo que sigue a `python` es el título (` ```python foo.py `) |
+| ` ```python estatico ` | código con colores, sin botón de ejecutar (para fragmentos incompletos) |
+| ` ```pycon ` | una sesión interactiva: los renglones con `>>>` y `...` son código y el resto, lo que responde Python |
+| ` ```salida ` | lo que muestra la consola, sin colores (para poner la salida esperada en una solución) |
+
+```pycon
+>>> 0.1 + 0.2 == 0.3
+False
+>>> a = [1, 2]; b = a
+>>> b is a
+True
+```
+
+## Preguntas de opción múltiple
+
+Una caja `::: pregunta` con una lista de opciones: `- [x]` la correcta y `- [ ]` las incorrectas. Se responde con un clic: se marca en verde la correcta, en rojo la elegida si estaba mal, y se abre la `::: solucion` de adentro con la explicación. Si hay varias `[x]`, se marcan todas las que corresponden y se aprieta **Comprobar**. **Reintentar** borra la respuesta. Las opciones pueden llevar `código`, fórmulas o bloques enteros.
+
+::: pregunta ¿Qué imprime este código?
+```python
+foo = [1, 2, 3]
+bar = foo
+bar += [4]
+print(foo)
+```
+- [ ] `[1, 2, 3]`
+- [x] `[1, 2, 3, 4]`
+- [ ] `TypeError`
+::: solucion Explicación
+`bar = foo` no copia la lista: los dos nombres apuntan al **mismo** objeto. Y `+=` en una lista la modifica en el lugar (llama a `list.__iadd__`), así que el cambio se ve desde `foo`. Con `bar = bar + [4]` se crearía una lista nueva y `foo` seguiría siendo `[1, 2, 3]`.
+:::
+:::
+
+````text
+::: pregunta ¿Qué imprime este código?
+```python
+...
+```
+- [ ] `[1, 2, 3]`
+- [x] `[1, 2, 3, 4]`
+::: solucion Explicación
+...
+:::
+:::
+````
 
 ## Imágenes
 
@@ -223,5 +287,5 @@ Pegalas (Ctrl+V), arrastralas al editor o usá **▣ Imagen**. En el texto alter
 ## Otros atajos
 
 - `Ctrl+M`: fórmula · `Ctrl+Shift+M`: ecuación · `Ctrl+S`: guardar · `Ctrl+K`: buscar · `Ctrl+B` (fuera del editor): esconder el mapa · `Esc`: volver a la vista.
-- `[[Título de otra nota]]` enlaza otra nota del árbol.
+- `[[Título de otra nota]]` enlaza otra nota del árbol; `[[Título#Sección|texto]]` lleva a un título `##` de esa nota. Al seguir un link aparece **← Volver**, que te devuelve al mismo lugar donde estabas leyendo (también con el botón Atrás del navegador).
 - **A− / A+** arriba cambian el tamaño de letra; **⤓** descarga todo el mapa como un HTML con los dos temas.

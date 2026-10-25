@@ -9,7 +9,7 @@
 //   malla (2, 1) ; horaria ; "$I$"
 //   ```
 //
-// Otros: capacitor, amperimetro, voltimetro, interruptor (abierto/cerrado),
+// Otros: capacitor, amperimetro, voltimetro, galvanometro, interruptor (abierto/cerrado),
 // tierra (x,y), etiqueta (x,y) "texto". Coordenadas en una grilla, y hacia
 // arriba. Ajustes: titulo, animar (si/no), flujo (convencional/electrones).
 //
@@ -23,11 +23,12 @@ const KINDS = {
   capacitor: "cap", condensador: "cap",
   cable: "wire", conductor: "wire",
   amperimetro: "amm", amperímetro: "amm", voltimetro: "volt", voltímetro: "volt",
+  galvanometro: "galv", galvanómetro: "galv",
   interruptor: "sw", llave: "sw",
   tierra: "ground", nodo: "node", etiqueta: "text", texto: "text",
   corriente: "current", malla: "mesh",
 };
-const TWO_POINTS = new Set(["R", "bat", "cap", "amm", "volt", "sw", "current"]);
+const TWO_POINTS = new Set(["R", "bat", "cap", "amm", "volt", "galv", "sw", "current"]);
 const SIDES = { arriba: "up", abajo: "down", izquierda: "left", derecha: "right" };
 const SETTINGS = new Set(["titulo", "título", "animar", "flujo", "alto"]);
 
@@ -137,7 +138,7 @@ export function segments(spec) {
   const segs = [];
   for (const it of spec.items) {
     if (it.kind === "wire") for (let k = 0; k + 1 < it.pts.length; k++) segs.push({ item: it, a: it.pts[k], b: it.pts[k + 1] });
-    else if (["R", "bat", "cap", "amm", "volt", "sw"].includes(it.kind)) segs.push({ item: it, a: it.pts[0], b: it.pts[1] });
+    else if (["R", "bat", "cap", "amm", "volt", "galv", "sw"].includes(it.kind)) segs.push({ item: it, a: it.pts[0], b: it.pts[1] });
   }
   const terminals = new Map();
   for (const s of segs) for (const p of [s.a, s.b]) terminals.set(key(p), p);

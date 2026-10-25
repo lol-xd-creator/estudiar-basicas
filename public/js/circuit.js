@@ -97,6 +97,7 @@ export class CircuitView {
       case "cap":
       case "amm":
       case "volt":
+      case "galv":
       case "sw": {
         const [a, b] = it.pts.map(P);
         const geo = frame(a, b);
@@ -219,6 +220,9 @@ export class CircuitView {
   }
   draw_volt(geo) {
     return this.meter(geo, "V");
+  }
+  draw_galv(geo) {
+    return this.meter(geo, "G");
   }
 
   draw_sw(geo, it) {

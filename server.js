@@ -53,6 +53,10 @@ if (notes.count() === 0) seed(notes);
 const TYPES = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
+  ".mjs": "text/javascript; charset=utf-8",
+  ".wasm": "application/wasm",
+  ".zip": "application/zip",
+  ".json": "application/json; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".svg": "image/svg+xml",
   ".png": "image/png",
@@ -66,7 +70,7 @@ const TYPES = {
 // Cabeceras de seguridad en todas las respuestas.
 const SECURITY_HEADERS = {
   "Content-Security-Policy":
-    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; " +
+    "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; " +
     "connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",

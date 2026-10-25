@@ -7,6 +7,7 @@ import { renderNote } from "./render.js";
 import { typesetMath, mathHTML, mathError } from "./math.js";
 import { enhance } from "./enhance.js";
 import { mountPlots } from "./plots.js";
+import { mountPython } from "./pyrun.js";
 import { applyFormat, continueList, indent, insertSymbol, mathAt } from "./md-format.js";
 import { downloadMap } from "./export.js";
 
@@ -14,7 +15,7 @@ const $ = (id) => document.getElementById(id);
 const els = {
   app: $("app"), tree: $("tree"), results: $("results"), search: $("search"),
   placeholder: $("placeholder"), note: $("note"), crumbs: $("crumbs"), status: $("status"),
-  view: $("view"), viewTitle: $("view-title"), viewBody: $("view-body"), children: $("children"), toc: $("toc"),
+  view: $("view"), viewTitle: $("view-title"), viewBody: $("view-body"), children: $("children"), toc: $("toc"), back: $("back-trail"),
   edit: $("edit"), titleInput: $("title-input"), editor: $("editor"), preview: $("preview"), panes: $("edit-panes"),
   moreBtn: $("more-btn"), moreMenu: $("more-menu"), splitter: $("splitter"),
 };
@@ -69,7 +70,7 @@ function go(id) {
   else open(id);
 }
 
-async function open(id) {
+async function open(id, nav = null) {
   if (state.note?.id === id) return;
   await flush();
   let note;
@@ -82,6 +83,7 @@ async function open(id) {
   state.note = note;
   tree.select(id);
   showNote(note);
+  applyNav(nav);
 }
 
 function showEmpty() {
@@ -131,6 +133,7 @@ function renderView(note, keepScroll) {
   typesetMath(els.viewBody);
   enhance(els.viewBody);
   mountPlots(els.viewBody);
+  mountPython(els.viewBody);
   renderChildren(note.id);
   renderToc(headings);
   els.view.scrollTop = keepScroll ? scroll : 0;
@@ -206,10 +209,72 @@ document.addEventListener("click", (e) => {
   if (wiki) {
     e.preventDefault();
     const n = tree.findByTitle(wiki.dataset.noteTitle);
-    if (n) go(n.id);
-    else setStatus(`No existe la nota «${wiki.dataset.noteTitle}»`, "error");
+    if (!n) return setStatus(`No existe la nota «${wiki.dataset.noteTitle}»`, "error");
+    const anchor = wiki.dataset.section || null;
+    if (n.id === state.note?.id) return scrollToAnchor(anchor);
+    // Se recuerda dónde estaba la lectura para poder volver al mismo lugar.
+    if (state.note && state.mode === "view") trail.push({ id: state.note.id, title: state.note.title, scroll: els.view.scrollTop });
+    pendingNav = { anchor };
+    go(n.id);
   }
 });
+
+// ---------- links entre notas: ir y volver ----------
+// Cada salto por un [[link]] apila la nota y la posición de lectura de origen.
+// «Volver» (o el botón Atrás del navegador) la reabre en ese mismo lugar; ir a
+// otra nota desde el árbol, las migas o las subnotas vacía la pila.
+
+const trail = [];
+let pendingNav = null;
+let popped = false;
+window.addEventListener("popstate", () => (popped = true));
+
+function takeNav(id) {
+  let nav = pendingNav;
+  pendingNav = null;
+  if (!nav && popped && trail.at(-1)?.id === id) nav = { scroll: trail.pop().scroll };
+  popped = false;
+  if (!nav) trail.length = 0;
+  return nav;
+}
+
+function goBack() {
+  const t = trail.pop();
+  if (!t) return;
+  pendingNav = { scroll: t.scroll };
+  go(t.id);
+}
+
+function applyNav(nav) {
+  renderBack();
+  if (!nav) return;
+  requestAnimationFrame(() => {
+    if (nav.scroll != null) els.view.scrollTop = nav.scroll;
+    else if (nav.anchor) scrollToAnchor(nav.anchor);
+  });
+}
+
+function scrollToAnchor(id) {
+  const el = id && els.viewBody.querySelector(`[id="${CSS.escape(id)}"]`);
+  if (!el) return;
+  el.scrollIntoView({ block: "start" });
+  el.classList.remove("flash");
+  void el.offsetWidth;
+  el.classList.add("flash");
+}
+
+function renderBack() {
+  const t = trail.at(-1);
+  els.back.hidden = !t;
+  if (!t) return els.back.replaceChildren();
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "back-btn";
+  b.textContent = `← Volver a «${t.title}»`;
+  b.title = "Volver al mismo lugar de la nota anterior";
+  b.addEventListener("click", goBack);
+  els.back.replaceChildren(b);
+}
 
 // ---------- modo vista / edición ----------
 
@@ -239,6 +304,7 @@ function renderPreview() {
     const drawn = typesetMath(els.preview);
     enhance(els.preview);
     mountPlots(els.preview);
+    mountPython(els.preview);
     syncPreview();
     drawn.then(syncPreview);
   });
@@ -731,7 +797,7 @@ $("logout").addEventListener("click", async () => {
 
 function route() {
   const m = location.hash.match(/^#\/n\/([\w-]+)/);
-  if (m) open(m[1]);
+  if (m) open(m[1], takeNav(m[1]));
   else if (!location.hash) showEmpty();
 }
 window.addEventListener("hashchange", route);

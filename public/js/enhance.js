@@ -6,26 +6,159 @@ let active = null; // demostración en modo paso a paso que recibe el teclado
 
 export function enhance(root) {
   for (const proof of root.querySelectorAll(".box.proof")) setupProof(proof);
-  // Los ejemplos con un desarrollo en pasos también se pueden seguir de a uno.
+  // Todos los ejemplos y ejercicios se pueden plegar; los que tienen un
+  // desarrollo en pasos, además, se pueden seguir de a uno.
   for (const ex of root.querySelectorAll(".box.example, .box.exercise")) {
-    if (ex.querySelector(":scope > .box-body > .pasos")) setupProof(ex);
+    setupProof(ex, !!ex.querySelector(":scope > .box-body > .pasos"));
   }
+  for (const q of root.querySelectorAll(".box.question")) setupQuestion(q);
+  for (const fig of root.querySelectorAll("figure.code")) setupCopy(fig);
+}
+
+// ---------- preguntas de opción múltiple ----------
+
+// Las opciones son la lista cuyos ítems empiezan con [ ] o [x]. Con una
+// sola correcta, se responde con un clic; con varias, se marcan y se
+// comprueba. Al responder se muestra cuál era y se abre la explicación.
+const MARK = /^\s*\[([ xX])\]\s?/;
+
+function setupQuestion(box) {
+  if (box.dataset.ready) return;
+  const body = box.querySelector(":scope > .box-body");
+  const list = [...body.querySelectorAll(":scope > ul")].find((ul) => ul.children.length && [...ul.children].every((li) => MARK.test(li.textContent)));
+  if (!list) return;
+  box.dataset.ready = "1";
+  const opts = [...list.children];
+  for (const li of opts) {
+    // Sacar la marca del primer texto (puede estar dentro de un <p>).
+    const walker = document.createTreeWalker(li, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      if (!n.textContent.trim()) continue;
+      const m = n.textContent.match(MARK);
+      if (m) {
+        li.dataset.correct = m[1] === " " ? "0" : "1";
+        n.textContent = n.textContent.slice(m[0].length);
+      }
+      break;
+    }
+    li.classList.add("q-opt");
+    li.tabIndex = 0;
+    li.setAttribute("role", "button");
+  }
+  list.classList.add("q-opts");
+  const multi = opts.filter((li) => li.dataset.correct === "1").length > 1;
+  const foot = document.createElement("div");
+  foot.className = "q-foot";
+  const verdict = document.createElement("span");
+  verdict.className = "q-verdict";
+  const check = button("Comprobar", "Ver si las opciones marcadas son las correctas");
+  const retry = button("Reintentar", "Borrar la respuesta y volver a intentar");
+  check.hidden = !multi;
+  retry.hidden = true;
+  if (multi) {
+    const hint = document.createElement("span");
+    hint.className = "q-hint";
+    hint.textContent = "Puede haber más de una correcta.";
+    foot.append(hint);
+  }
+  foot.append(verdict, check, retry);
+  list.after(foot);
+  const details = [...body.querySelectorAll(":scope > details.box")];
+  for (const d of details) d.hidden = true;
+
+  const answer = () => {
+    box.classList.add("is-answered");
+    let ok = true;
+    for (const li of opts) {
+      const correct = li.dataset.correct === "1";
+      const chosen = li.classList.contains("is-chosen");
+      if (correct !== chosen) ok = false;
+      li.classList.toggle("is-right", correct);
+      li.classList.toggle("is-wrong", chosen && !correct);
+      li.tabIndex = -1;
+    }
+    const letters = opts.map((li, k) => (li.dataset.correct === "1" ? String.fromCharCode(65 + k) : "")).filter(Boolean);
+    verdict.textContent = ok ? "✓ Correcto" : `✗ Incorrecto: ${letters.length > 1 ? "eran la " + letters.join(", la ") : "era la " + letters[0]}`;
+    verdict.className = "q-verdict " + (ok ? "is-ok" : "is-bad");
+    check.hidden = true;
+    retry.hidden = false;
+    for (const d of details) {
+      d.hidden = false;
+      d.open = true;
+    }
+  };
+  const choose = (li) => {
+    if (box.classList.contains("is-answered")) return;
+    if (multi) li.classList.toggle("is-chosen");
+    else {
+      li.classList.add("is-chosen");
+      answer();
+    }
+  };
+  for (const li of opts) {
+    li.addEventListener("click", (e) => {
+      if (e.target.closest("a, button, figure.code")) return;
+      choose(li);
+    });
+    li.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        choose(li);
+      }
+    });
+  }
+  check.addEventListener("click", answer);
+  retry.addEventListener("click", () => {
+    box.classList.remove("is-answered");
+    for (const li of opts) {
+      li.classList.remove("is-chosen", "is-right", "is-wrong");
+      li.tabIndex = 0;
+    }
+    verdict.textContent = "";
+    check.hidden = !multi;
+    retry.hidden = true;
+    for (const d of details) d.hidden = true;
+  });
+}
+
+// ---------- copiar código ----------
+
+function setupCopy(fig) {
+  const cap = fig.querySelector(":scope > figcaption");
+  if (!cap || cap.querySelector(".copy")) return;
+  const btn = button("Copiar", "Copiar el código");
+  btn.className = "copy";
+  btn.addEventListener("click", async () => {
+    const editor = fig.querySelector(":scope > textarea.code-editor");
+    const text = editor ? editor.value : fig.querySelector(":scope > .code-src")?.textContent ?? fig.querySelector("pre")?.textContent ?? "";
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.textContent = "Copiado ✓";
+    } catch {
+      btn.textContent = "No se pudo";
+    }
+    setTimeout(() => (btn.textContent = "Copiar"), 1400);
+  });
+  cap.append(btn);
 }
 
 // ---------- demostraciones ----------
 
-function setupProof(proof) {
+function setupProof(proof, steps = true) {
   if (proof.dataset.ready) return;
   proof.dataset.ready = "1";
   const head = proof.querySelector(":scope > .proof-head, :scope > .box-title");
   if (!head) return;
   const tools = document.createElement("span");
   tools.className = "proof-tools";
-  const stepBtn = button("Paso a paso", "Ir mostrando un paso por vez (→ / espacio)");
-  const foldBtn = button("Plegar", "Plegar o desplegar la demostración");
-  tools.append(stepBtn, foldBtn);
+  const foldBtn = button("Plegar", "Plegar o desplegar");
+  if (steps) {
+    const stepBtn = button("Paso a paso", "Ir mostrando un paso por vez (→ / espacio)");
+    tools.append(stepBtn);
+    stepBtn.addEventListener("click", () => (proof.classList.contains("is-stepping") ? stopSteps(proof) : startSteps(proof)));
+  }
+  tools.append(foldBtn);
   head.append(tools);
-  stepBtn.addEventListener("click", () => (proof.classList.contains("is-stepping") ? stopSteps(proof) : startSteps(proof)));
   foldBtn.addEventListener("click", () => {
     const folded = proof.classList.toggle("is-folded");
     foldBtn.textContent = folded ? "Desplegar" : "Plegar";

@@ -488,3 +488,131 @@ code, pre, #editor, .hit-snippet { font-variant-ligatures: none; font-feature-se
 }
 .login-card button:disabled { opacity: 0.6; }
 .login-error { min-height: 1.2em; margin: 0; font-size: 13px; color: var(--danger); }
+
+/* ---------- código Python ---------- */
+.tk-kw { color: var(--tk-kw); font-weight: 600; }
+.tk-str { color: var(--tk-str); }
+.tk-num, .tk-const { color: var(--tk-num); }
+.tk-const { font-weight: 600; }
+.tk-com { color: var(--tk-com); font-style: italic; }
+.tk-fn, .tk-cls { color: var(--tk-fn); font-weight: 600; }
+.tk-call { color: var(--tk-fn); }
+.tk-bi { color: var(--tk-bi); }
+.tk-dec { color: var(--tk-dec); }
+.tk-self { color: var(--tk-self); font-style: italic; }
+.tk-op { color: var(--tk-op); }
+.tk-int { color: var(--tk-kw); }
+figure.code.is-repl .prompt { color: var(--tk-com); user-select: none; }
+figure.code.is-repl .line.out { color: var(--muted); }
+figure.code.is-term pre { color: var(--text); }
+/* El texto de las cajas es serif; el código y su barra, no. */
+figure.code { font-family: var(--font); }
+
+/* barra: título, lenguaje y botones */
+figure.code figcaption .code-lang { margin-right: auto; }
+figure.code figcaption .code-title { margin-right: 4px; }
+figure.code .copy { margin-left: 0; }
+.py-tools { display: flex; gap: 4px; margin-left: 4px; }
+.py-btn {
+  background: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 5px;
+  padding: 2px 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.py-btn:hover:not(:disabled) { color: var(--text-strong); background: var(--bg-hover); }
+.py-btn.py-run { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 55%, transparent); font-weight: 600; }
+.py-btn.py-run:hover:not(:disabled) { color: var(--accent); background: var(--accent-soft); }
+.py-btn:disabled { opacity: 0.6; cursor: progress; }
+
+/* edición en el lugar */
+figure.code textarea.code-editor {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 4em;
+  margin: 0;
+  padding: 12px 18px;
+  border: 0;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--accent) 5%, var(--code-bg));
+  color: var(--text-strong);
+  font: 13.5px/1.6 var(--mono);
+  tab-size: 4;
+  white-space: pre;
+  overflow-x: auto;
+}
+figure.code.is-editing { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+
+/* salida de la ejecución */
+.py-out { border-top: 1px solid var(--line); background: var(--term-bg); }
+.py-out-head { padding: 4px 14px; font-size: 11px; letter-spacing: 0.04em; color: var(--faint); border-bottom: 1px dashed var(--line); }
+.py-out-body { margin: 0; padding: 10px 18px; font: 13px/1.55 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text); max-height: 26em; overflow-y: auto; }
+.py-out-body.is-wait { color: var(--faint); font-style: italic; }
+.py-out-body.is-error, .py-tb { color: var(--bad); }
+.py-empty { color: var(--faint); font-style: italic; }
+
+/* ---------- preguntas de opción múltiple ---------- */
+.box.question { --c: var(--thm); }
+.q-opts { list-style: none; padding-left: 0; margin: 0.6em 0 0.4em; counter-reset: q; }
+.md .q-opts > li.q-opt {
+  counter-increment: q;
+  position: relative;
+  margin: 0.35em 0;
+  padding: 0.35em 0.8em 0.35em 2.6em;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.q-opts > li.q-opt::before {
+  content: counter(q, upper-alpha);
+  position: absolute;
+  left: 0.75em;
+  top: 0.4em;
+  width: 1.35em;
+  height: 1.35em;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  font: 600 0.72em/1 var(--font);
+  color: var(--muted);
+}
+.q-opts > li.q-opt > p { margin: 0; }
+.q-opts > li.q-opt figure.code { margin: 0.4em 0; }
+.box.question:not(.is-answered) .q-opt:hover,
+.box.question:not(.is-answered) .q-opt:focus-visible { border-color: var(--c); background: color-mix(in srgb, var(--c) 6%, var(--bg)); outline: none; }
+.q-opt.is-chosen { border-color: var(--c); background: color-mix(in srgb, var(--c) 10%, var(--bg)); }
+.q-opt.is-chosen::before { background: var(--c); color: var(--bg); border-color: var(--c); }
+.box.question.is-answered .q-opt { cursor: default; }
+.box.question.is-answered .q-opt:not(.is-right):not(.is-wrong) { opacity: 0.62; }
+.q-opt.is-right { border-color: var(--ok) !important; background: color-mix(in srgb, var(--ok) 12%, var(--bg)) !important; }
+.q-opt.is-right::before { content: "✓"; background: var(--ok); color: var(--bg); border-color: var(--ok); }
+.q-opt.is-wrong { border-color: var(--bad) !important; background: color-mix(in srgb, var(--bad) 10%, var(--bg)) !important; }
+.q-opt.is-wrong::before { content: "✗"; background: var(--bad); color: var(--bg); border-color: var(--bad); }
+.q-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0.3em 0 0.2em; font-family: var(--font); font-size: 13px; }
+.q-hint { color: var(--faint); font-style: italic; margin-right: auto; }
+.q-verdict { font-weight: 650; margin-right: auto; }
+.q-verdict.is-ok { color: var(--ok); }
+.q-verdict.is-bad { color: var(--bad); }
+.q-foot button { background: none; border: 1px solid var(--line-strong); border-radius: 6px; padding: 2px 12px; font-size: 12.5px; color: var(--muted); }
+.q-foot button:hover { color: var(--text-strong); background: var(--bg-hover); }
+
+/* ---------- links entre notas: volver al lugar de lectura ---------- */
+.back-trail { position: sticky; top: 8px; z-index: 5; margin: -16px 0 12px; }
+.back-btn {
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: 600 13px/1.2 var(--font); color: var(--text-strong); cursor: pointer;
+  background: var(--bg-raised); border: 1px solid var(--line-strong); border-radius: 999px;
+  padding: 7px 14px; box-shadow: var(--shadow);
+}
+.back-btn:hover { background: var(--bg-hover); }
+.md .flash { animation: flash-heading 1.6s ease-out; border-radius: 4px; }
+@keyframes flash-heading { from { background: var(--accent-soft); } to { background: transparent; } }
+.md a.wikilink[data-section]::after { content: " ↗"; font-size: 0.8em; opacity: 0.7; }
+.md :is(h2, h3, h4) { scroll-margin-top: 52px; }
