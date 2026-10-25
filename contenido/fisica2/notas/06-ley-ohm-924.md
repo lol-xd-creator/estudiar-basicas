@@ -1,6 +1,6 @@
 # Ley de Ohm y ejercicio 9.24
 
-*Clase del 25/8.*
+*Clase práctica del 25/08. Guía de trabajos prácticos, capítulo 9. La teoría de corriente y resistencia está en [[Corriente eléctrica, resistencia y resistividad]].*
 
 ## Ley de Ohm
 
@@ -23,7 +23,7 @@ $V$ en volt ($\text{V}$), $I$ en ampere ($\text{A}$), $R$ en ohm ($\Omega$).
 En el teórico la numeración es al revés: la **1ª** es la de los nudos ($\sum I = 0$) y la **2ª** la de las mallas ($\sum \Delta V = 0$). Ver [[Conexión de resistores y leyes de Kirchhoff]].
 :::
 
-Intensidad: $I = \dfrac{dQ}{dt}$ (carga sobre tiempo).
+Intensidad: $I = \dfrac{\dd Q}{\dd t}$ (carga sobre tiempo).
 
 ## Potencia
 
@@ -32,6 +32,10 @@ P = V\cdot I \qquad\qquad P = \frac{V^2}{R} \qquad\qquad P = I^2\cdot R \qquad [
 $$
 
 ## Ejercicio 9.24
+
+::: aclaracion
+En la clase se llamó **9.24**, pero en la guía es el **9.23** (el 9.24 de la guía es otro: una corriente que se triplica al agregar una resistencia en paralelo). Respuestas de la guía para controlar: A $= 9\,\Omega$, B $= 12\,\Omega$.
+:::
 
 ::: ejercicio Resistencia equivalente, a)
 ```circuito
@@ -49,6 +53,9 @@ cable (4.4,0) (4.4,1)
 nodo (4.4,1)
 ```
 
+Intentalo antes de abrir la solución: buscá los dos nudos y sumá cada rama entre ellos.
+
+::: solucion
 Las tres ramas entre los nudos quedan de $7\,\Omega$ ($3 + 3 + 1$ y $2 + 5$) y $14\,\Omega$:
 
 ```circuito
@@ -75,6 +82,7 @@ R_{eq} = 9\,\Omega
 $$
 :::
 :::
+:::
 
 ::: ejercicio Resistencia equivalente, b)
 ```circuito
@@ -98,13 +106,24 @@ R (4,0) (5.6,1) ; 2 ; derecha
 nodo (5.6,1)
 ```
 
+::: solucion
+En la hoja está solo el resultado. Se llega así, de adentro hacia afuera:
+
+::: pasos
+// $3\,\Omega$ y $6\,\Omega$ en paralelo:
+\frac{3\cdot 6}{3 + 6} = 2\,\Omega
+// Rama de arriba ($5$, el paralelo y $4$ en serie) y rama de abajo ($9$ y $2$ en serie):
+5 + 2 + 4 = 11\,\Omega \qquad\qquad 9 + 2 = 11\,\Omega
+// Las tres ramas en paralelo ($11$, $22$ y $11\,\Omega$):
+R_p = \frac{1}{\frac{1}{11} + \frac{1}{22} + \frac{1}{11}} = 4{,}4\,\Omega
+// En serie con $7{,}6\,\Omega$:
+R_{eq} = 7{,}6\,\Omega + 4{,}4\,\Omega = 12\,\Omega
+:::
+
 ::: resultado
 $$
 R_{eq} = 12\,\Omega
 $$
 :::
-
-::: aclaracion
-En la hoja está solo el resultado. Se llega así: $3\,\Omega$ y $6\,\Omega$ en paralelo dan $2\,\Omega$; la rama de arriba queda en $5 + 2 + 4 = 11\,\Omega$ y la de abajo en $9 + 2 = 11\,\Omega$. Las tres ramas en paralelo ($11$, $22$ y $11\,\Omega$) dan $4{,}4\,\Omega$, y en serie con $7{,}6\,\Omega$: $12\,\Omega$.
 :::
 :::

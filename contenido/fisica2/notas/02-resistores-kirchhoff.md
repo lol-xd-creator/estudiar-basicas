@@ -1,5 +1,7 @@
 # Conexión de resistores y leyes de Kirchhoff
 
+*Clase teórica del 01/09 (segunda parte). Completado con el Serway, sec. 28.2 (Resistores en serie y en paralelo) y 28.3 (Leyes de Kirchhoff). Viene de [[Potencia eléctrica, efecto Joule y resistencia interna]]; el ejemplo resuelto está en [[Método de Kirchhoff (EJ6)]].*
+
 ## 1. En serie
 
 ```circuito
@@ -58,7 +60,7 @@ $$
 :::
 
 ::: observacion
-En paralelo, $R_{eq}$ queda por debajo de la menor de las resistencias: el límite lo pone la más chica.
+En paralelo, $R_{eq}$ queda por debajo de la menor de las resistencias: **el límite lo pone la más chica**. Por ejemplo, con $R_1 = 10,Omega$ y $R_2 = 2,Omega$: $R_{eq} = rac{10cdot 2}{10 + 2} approx 1{,}67,Omega < 2,Omega$. En serie pasa lo contrario: $R_{eq}$ es mayor que la más grande.
 :::
 
 ## Leyes de Kirchhoff
@@ -101,7 +103,7 @@ $$
 :::
 
 ::: ley de las mallas (2ª de Kirchhoff)
-La sumatoria de todas las diferencias de potencial a lo largo de una malla da cero.
+La sumatoria de todas las diferencias de potencial a lo largo de una malla da cero. Se basa en la **conservación de la energía**: una carga que da la vuelta y vuelve al mismo punto tiene el mismo potencial que al salir (Serway, sec. 28.3).
 
 $$
 \sum \Delta V_i = 0
