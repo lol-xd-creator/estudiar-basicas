@@ -33,6 +33,26 @@
   - sobre una carga $q$ produce una fuerza $\vec F = q\,\vec E$.
 - **Unidad:** $[E] = \dfrac{\text{N}}{\text{C}}$, que es lo mismo que $\dfrac{\text{V}}{\text{m}}$.
 
+```grafico
+titulo: Carga positiva: el campo sale
+carga (0, 0) ; +1
+lineas: 12
+animar: no
+x: -2..2
+y: -1.6..1.6
+alto: 220
+```
+
+```grafico
+titulo: Carga negativa: el campo entra
+carga (0, 0) ; -1
+lineas: 12
+animar: no
+x: -2..2
+y: -1.6..1.6
+alto: 220
+```
+
 📍 **En el teórico:** [[Campo eléctrico y varias cargas puntuales#Campo eléctrico|02/06 · Campo eléctrico]] (definición, carga puntual, características) y [[Campo eléctrico y varias cargas puntuales#Campo generado por varias cargas puntuales|02/06 · Varias cargas]]. La equivalencia $\frac{\text{N}}{\text{C}} = \frac{\text{V}}{\text{m}}$, en [[Potencial eléctrico y diferencia de potencial#Potencial eléctrico|30/06 · Potencial eléctrico]]. Serway, sec. 23.4.
 
 ## 2) ¿Cómo se relacionan las líneas de campo eléctrico con la región del espacio?
@@ -44,6 +64,25 @@ Las **líneas de campo** son un esquema de cómo se distribuye el campo en el es
 - **salen** de las cargas positivas y **entran** en las negativas (o van al infinito);
 - la cantidad de líneas es **proporcional a la carga**;
 - **no se cruzan**.
+
+```grafico
+titulo: Dipolo: las líneas salen de la + y entran en la −; más juntas cerca de las cargas (campo más intenso)
+carga (-1.5, 0) ; +1
+carga (1.5, 0) ; -1
+animar: no
+x: -3.5..3.5
+y: -2.2..2.2
+```
+
+```grafico
+titulo: Dos cargas positivas iguales: las líneas no se cruzan; en el medio el campo es nulo
+carga (-1.5, 0) ; +1
+carga (1.5, 0) ; +1
+(0, 0) ; "$E = 0$"
+animar: no
+x: -3.5..3.5
+y: -2.2..2.2
+```
 
 📍 **En el teórico:** [[Líneas de campo, flujo y ley de Gauss#Líneas de campo|23/06 · Líneas de campo]] (con las reglas para dibujarlas y los gráficos del dipolo y de dos cargas iguales). Serway, sec. 23.6.
 
@@ -59,6 +98,34 @@ $\vec A$ es el vector área (perpendicular a la superficie) y $\theta$ el ángul
 
 - **Máximo** ($\Phi_E = E\,A$): cuando $\theta = 0°$, el campo es **perpendicular a la superficie** (paralelo a $\vec A$) y la atraviesa de frente.
 - **Nulo** ($\Phi_E = 0$): cuando $\theta = 90°$, el campo es **paralelo a la superficie** y "pasa rasante", sin atravesarla.
+
+```grafico
+titulo: Flujo según la orientación: máximo de frente, intermedio inclinada, nulo si el campo pasa rasante
+vector (-4.8, 0.9) (-2.3, 0.9) ; azul
+vector (-4.8, 0.3) (-2.3, 0.3) ; azul
+vector (-4.8, -0.3) (-2.3, -0.3) ; azul
+vector (-4.8, -0.9) (-2.3, -0.9) ; azul
+segmento (-3.5, -1.1) (-3.5, 1.1) ; verde ; gruesa
+vector (-3.5, 0) (-2.6, 0) ; violeta ; "$\vec A$"
+texto (-3.5, -1.5) "$\theta = 0°$: máximo"
+vector (-1.2, 0.9) (1.3, 0.9) ; azul
+vector (-1.2, 0.3) (1.3, 0.3) ; azul
+vector (-1.2, -0.3) (1.3, -0.3) ; azul
+vector (-1.2, -0.9) (1.3, -0.9) ; azul
+segmento (-0.5, -1) (0.5, 1) ; verde ; gruesa
+vector (0, 0) (0.8, -0.4) ; violeta ; "$\vec A$"
+texto (0, -1.5) "$\Phi_E = E\,A\cos\theta$"
+vector (2.3, 0.9) (4.8, 0.9) ; azul
+vector (2.3, 0.3) (4.8, 0.3) ; azul
+vector (2.3, -0.3) (4.8, -0.3) ; azul
+vector (2.3, -0.9) (4.8, -0.9) ; azul
+segmento (2.5, 0) (4.5, 0) ; verde ; gruesa
+vector (3.5, 0) (3.5, 0.75) ; violeta ; "$\vec A$"
+texto (3.5, -1.5) "$\theta = 90°$: nulo"
+x: -5.2..5.2
+y: -1.8..1.3
+alto: 230
+```
 
 📍 **En el teórico:** [[Líneas de campo, flujo y ley de Gauss#Flujo eléctrico|23/06 · Flujo eléctrico]] (definición y tabla de máximo y nulo). Serway, sec. 24.1.
 
@@ -78,6 +145,33 @@ $$
 - la **esfera** cargada: desde afuera, como una carga puntual en el centro, $E = k_0\frac{Q}{r^2}$; adentro, $E = k_0\frac{Q\,r}{a^3}$;
 - el **hilo** infinito: $E = \dfrac{2k_0\lambda}{r}$;
 - la **placa** infinita: $E = \dfrac{\sigma}{2\varepsilon_0}$, y entre dos placas opuestas, $E = \dfrac{\sigma}{\varepsilon_0}$.
+
+```grafico
+titulo: Superficie gaussiana: una superficie cerrada imaginaria; el flujo solo depende de la carga de adentro
+carga (0, 0) ; +1
+(1.5cos(t), 1.5sen(t)) ; t: 0..2pi ; verde ; punteada
+texto (1.45, 1.45) "superficie gaussiana"
+leyenda: no
+animar: no
+x: -2.6..2.6
+y: -2..2
+```
+
+```grafico
+titulo: Esfera cargada (radio a): E crece lineal adentro y cae como 1/r² afuera
+(t, t) ; t: 0..1 ; azul ; gruesa
+(t, 1/t^2) ; t: 1..4 ; rojo ; gruesa
+segmento (1, 0) (1, 1) ; gris ; punteada
+texto (1, -0.12) "$a$"
+texto (0.35, 0.6) "$k_0\frac{Q\,r}{a^3}$"
+texto (2.2, 0.45) "$k_0\frac{Q}{r^2}$"
+ejes: r, E
+leyenda: no
+aspecto: libre
+alto: 240
+x: 0..4
+y: -0.2..1.3
+```
 
 📍 **En el teórico:** [[Líneas de campo, flujo y ley de Gauss#Ley de Gauss|23/06 · Ley de Gauss]] (enunciado y demostración) y [[Líneas de campo, flujo y ley de Gauss#Aplicación 1: esfera sólida cargada uniformemente|23/06 · Esfera]]; [[Ley de Gauss: hilo infinito y placas|30/06 · Hilo y placas]]. Serway, sec. 24.2 y 24.3.
 
@@ -132,6 +226,21 @@ $$
 
 Lo que tiene sentido físico es la **diferencia** de potencial, $\Delta V$; el valor de $V$ en un punto depende de dónde se elija el cero.
 
+```grafico
+titulo: Entre placas: el campo va de + a −; las equipotenciales son perpendiculares al campo y V₁ > V₂ > V₃
+placa (-2.5, 1.2) (2.5, 1.2) ; +
+placa (-2.5, -1.2) (2.5, -1.2) ; -
+segmento (-2.5, 0.6) (2.5, 0.6) ; ambar ; punteada
+segmento (-2.5, 0) (2.5, 0) ; ambar ; punteada
+segmento (-2.5, -0.6) (2.5, -0.6) ; ambar ; punteada
+texto (3.05, 0.6) "$V_1$"
+texto (3.05, 0) "$V_2$"
+texto (3.05, -0.6) "$V_3$"
+animar: no
+x: -3..3.5
+y: -1.6..1.6
+```
+
 📍 **En el teórico:** [[Potencial eléctrico y diferencia de potencial#Potencial eléctrico|30/06 · Potencial eléctrico]] (definiciones y la comparación "energía en un punto sin carga"). Serway, sec. 25.1.
 
 ## 8) ¿Qué es un capacitor? (forma, uso, cómo se carga)
@@ -140,6 +249,28 @@ Lo que tiene sentido físico es la **diferencia** de potencial, $\Delta V$; el v
 - **Para qué se usa:** para **acumular carga** y **energía eléctrica** ($U = \frac{1}{2}C\,\Delta V^2$) y entregarla cuando hace falta: flash de la cámara, sistemas de encendido, circuitos de radio.
 - **Cómo se carga:** conectando las placas a una **batería**, que funciona como una **bomba de carga**: saca electrones de una placa y los lleva a la otra hasta que la diferencia de potencial entre las placas es igual a la de la batería.
 - **Forma:** la más común es la de **placas planas paralelas**, con $C = \dfrac{\varepsilon_0 A}{d}$.
+
+```grafico
+titulo: Capacitor de placas paralelas cargado: campo uniforme de +Q a −Q
+placa (-1.5, -1.6) (-1.5, 1.6) ; +
+placa (1.5, -1.6) (1.5, 1.6) ; -
+texto (-1.5, 1.95) "$+Q$"
+texto (1.5, 1.95) "$-Q$"
+segmento (-1.5, -2) (1.5, -2) ; gris ; punteada ; "$d$"
+animar: no
+x: -3.2..3.2
+y: -2.4..2.3
+```
+
+```circuito
+titulo: Carga de un capacitor: al cerrar el interruptor, la batería pasa electrones de una placa a la otra
+bateria (0,0) (0,2) ; "$\Delta V$"
+cable (0,2) (1.5,2)
+interruptor (1.5,2) (2.7,2) ; cerrado
+cable (2.7,2) (4,2) (4,1.4)
+capacitor (4,1.4) (4,0.6) ; "$C$"
+cable (4,0.6) (4,0) (0,0)
+```
 
 📍 **En el teórico:** [[Capacitancia y capacitores#Qué es un capacitor|18/08 · Qué es un capacitor]], [[Capacitancia y capacitores#Cálculo de la capacitancia: placas paralelas|18/08 · Placas paralelas]] y [[Capacitancia y capacitores#Energía almacenada|18/08 · Energía almacenada]]. Serway, sec. 26.1 a 26.4.
 
@@ -160,6 +291,17 @@ $$
 C = \frac{\kappa\,\varepsilon_0\,A}{d}
 $$
 
+```grafico
+titulo: Q en función de ΔV: rectas por el origen cuya pendiente es la capacitancia
+y = 2x ; azul ; gruesa ; "$C_1$ (mayor)"
+y = 0.8x ; rojo ; gruesa ; "$C_2$ (menor)"
+ejes: ΔV, Q
+aspecto: libre
+alto: 250
+x: 0..5
+y: 0..10
+```
+
 📍 **En el teórico:** [[Capacitancia y capacitores#Capacitancia|18/08 · Capacitancia]], [[Capacitancia y capacitores#Cálculo de la capacitancia: placas paralelas|18/08 · Placas paralelas]] y [[Capacitancia y capacitores#Influencia del material dieléctrico|18/08 · Dieléctrico]]. Serway, sec. 26.1, 26.2 y 26.5.
 
 ## 10) ¿Qué es la corriente eléctrica? ¿Qué es la velocidad de arrastre?
@@ -173,6 +315,24 @@ $$
 
 con $n$ los portadores de carga por unidad de volumen y $A$ la sección.
 
+```grafico
+titulo: Los electrones avanzan despacio (v_d) en contra de E; la corriente convencional va a favor de E
+segmento (-3, 0.8) (3, 0.8) ; gris ; gruesa
+segmento (-3, -0.8) (3, -0.8) ; gris ; gruesa
+vector (-2.6, 1.3) (-1.2, 1.3) ; azul ; "$\vec E$"
+vector (1.2, 1.3) (2.6, 1.3) ; violeta ; "$I$"
+(-1.4, 0.25) ; "$e^-$"
+vector (-1.4, 0.25) (-2.2, 0.25) ; rojo ; "$\vec v_d$"
+(0.9, -0.3) ; "$e^-$"
+vector (0.9, -0.3) (0.1, -0.3) ; rojo
+(2.3, 0.35) ; "$e^-$"
+vector (2.3, 0.35) (1.5, 0.35) ; rojo
+texto (0, -1.25) "sección $A$"
+leyenda: no
+x: -3.4..3.4
+y: -1.6..1.7
+```
+
 📍 **En el teórico:** [[Corriente eléctrica, resistencia y resistividad#Corriente eléctrica|25/08 · Corriente eléctrica]] y [[Corriente eléctrica, resistencia y resistividad#Velocidad de arrastre (o de deriva)|25/08 · Velocidad de arrastre]]. Serway, sec. 27.1.
 
 ## 11) ¿Cuál es la relación que cumplen los materiales óhmicos?
@@ -184,6 +344,17 @@ J = \sigma\,E \qquad\text{(forma microscópica)} \qquad\qquad \Delta V = I\,R \q
 $$
 
 Es decir: **la corriente es proporcional a la diferencia de potencial**, y la resistencia $R$ **no depende** de $\Delta V$ ni de $I$. El gráfico de $I$ en función de $\Delta V$ es una **recta** que pasa por el origen. Los materiales **no óhmicos**, como el diodo, no cumplen esa proporción: su gráfico no es una recta.
+
+```grafico
+titulo: Óhmico: I proporcional a ΔV (recta, pendiente 1/R). No óhmico (diodo): curva
+y = 0.6x ; azul ; gruesa ; "óhmico"
+y = 0.04*(e^(1.3*x) - 1) ; rojo ; gruesa ; "diodo (no óhmico)"
+ejes: ΔV, I
+aspecto: libre
+alto: 250
+x: -1..4
+y: -0.5..4
+```
 
 📍 **En el teórico:** [[Corriente eléctrica, resistencia y resistividad#Densidad de corriente|25/08 · Densidad de corriente]] (ley de Ohm microscópica, óhmicos y no óhmicos) y [[Corriente eléctrica, resistencia y resistividad#Resistencia y resistividad|25/08 · Resistencia y resistividad]]. Serway, sec. 27.2.
 
@@ -197,6 +368,19 @@ $$
 
 Depende del **material** (su resistividad $\rho$), de la **longitud** $\ell$ (más largo, más resistencia), de la **sección** $A$ (más grueso, menos resistencia) y de la **temperatura**. Se mide con el **óhmetro** (el multímetro, sin tensión aplicada).
 
+```grafico
+titulo: R = ρ ℓ / A: más largo, más resistencia; más grueso, menos resistencia
+segmento (-2.5, 0.4) (2.5, 0.4) ; gris
+segmento (-2.5, -0.4) (2.5, -0.4) ; gris
+segmento (-2.5, -0.4) (-2.5, 0.4) ; verde ; gruesa ; "$A$"
+segmento (-2.5, -0.75) (2.5, -0.75) ; gris ; punteada ; "$\ell$"
+vector (-1.5, 0) (0.5, 0) ; violeta ; "$I$"
+texto (1.5, 0) "$\rho$"
+x: -3.2..3.2
+y: -1.1..0.9
+alto: 170
+```
+
 📍 **En el teórico:** [[Corriente eléctrica, resistencia y resistividad#Resistencia y resistividad|25/08 · Resistencia y resistividad]] y [[Corriente eléctrica, resistencia y resistividad#Medir con el multímetro|25/08 · Medir con el multímetro]]. Serway, sec. 27.2.
 
 ## 13) ¿Cómo se comporta la resistividad de los materiales óhmicos con la temperatura?
@@ -208,6 +392,17 @@ $$
 $$
 
 con $\alpha > 0$, el **coeficiente de temperatura** de la resistividad. En cambio, en los **semiconductores** (carbono, silicio, germanio) la resistividad **disminuye** al aumentar la temperatura ($\alpha < 0$).
+
+```grafico
+titulo: Resistividad en función de la temperatura: los metales suben, los semiconductores bajan
+y = 1 + 0.004*x ; azul ; gruesa ; "metal ($\alpha > 0$)"
+y = 2.6*e^(-x/120) ; rojo ; gruesa ; "semiconductor ($\alpha < 0$)"
+ejes: T, ρ
+aspecto: libre
+alto: 250
+x: 0..300
+y: 0..3
+```
 
 📍 **En el teórico:** [[Corriente eléctrica, resistencia y resistividad#Variación de la resistividad con la temperatura|25/08 · Variación de la resistividad con la temperatura]]. Serway, sec. 27.4.
 
@@ -221,6 +416,20 @@ $$
 
 y la resistencia equivalente queda **por debajo de la menor** de las dos. Al agregar un resistor en paralelo, se abre **otro camino** para la corriente: con la misma diferencia de potencial circula más corriente total, que es lo mismo que menos resistencia. Por ejemplo, $10\,\Omega$ en paralelo con $2\,\Omega$ da $1{,}67\,\Omega$. (En serie pasa lo contrario: la resistencia total aumenta.)
 
+```circuito
+titulo: En paralelo: los dos resistores tienen la misma ΔV y la corriente se reparte
+bateria (0,0) (0,2) ; "$\Delta V$"
+cable (0,2) (4,2)
+cable (2,2) (2,1.5)
+R (2,1.5) (2,0.5) ; "$R_1$"
+cable (2,0.5) (2,0)
+R (4,2) (4,0) ; "$R_2$"
+cable (4,0) (0,0)
+corriente (0.6,2) (1.4,2) ; "$I$"
+corriente (2,1.95) (2,1.55) ; "$I_1$"
+corriente (2.6,2) (3.4,2) ; "$I_2$"
+```
+
 📍 **En el teórico:** [[Conexión de resistores y leyes de Kirchhoff#2. En paralelo|01/09 · Resistores en paralelo]]. Serway, sec. 28.2.
 
 ## 15) ¿Qué enuncian las dos leyes de Kirchhoff? ¿Para qué se utilizan?
@@ -229,6 +438,24 @@ y la resistencia equivalente queda **por debajo de la menor** de las dos. Al agr
 - **2ª ley, de las mallas** (conservación de la **energía**): al recorrer cualquier malla cerrada, la suma de las diferencias de potencial (subidas en las baterías y caídas en las resistencias) es cero: $\sum \Delta V = 0$.
 
 **Para qué se usan:** para **resolver circuitos** que no se pueden reducir a combinaciones simples de serie y paralelo (por ejemplo, con varias baterías en distintas ramas): se plantea una ecuación por nudo y por malla hasta tener tantas ecuaciones como corrientes incógnitas. Si una corriente da negativa, circulaba al revés de lo propuesto.
+
+```circuito
+titulo: Nudos a y b: lo que entra es igual a lo que sale. En cada malla, la suma de las ΔV es cero
+cable (0,0) (0,4)
+R (0,4) (4,4) ; "$R_1$"
+cable (4,4) (4,2)
+R (0,2) (2,2) ; "$R_2$"
+bateria (4,2) (2,2) ; "$\varepsilon_2$"
+R (4,2) (4,0) ; "$R_3$"
+bateria (0,0) (4,0) ; "$\varepsilon_1$"
+nodo (0,2) ; "a"
+nodo (4,2) ; "b"
+corriente (0,2.6) (0,3.6) ; "$I_1$"
+corriente (0.6,2) (1.4,2) ; "$I_2$"
+corriente (4,1.4) (4,0.6) ; "$I_3$"
+malla (2,3) ; horaria
+malla (2,1) ; horaria
+```
 
 📍 **En el teórico:** [[Conexión de resistores y leyes de Kirchhoff#Leyes de Kirchhoff|01/09 · Leyes de Kirchhoff]] y [[Método de Kirchhoff (EJ6)#Pasos|01/09 · Método de Kirchhoff]]. Serway, sec. 28.3.
 
@@ -242,6 +469,19 @@ $$
 
 - **Efecto Joule:** la conversión de energía eléctrica en **calor** cuando la corriente atraviesa un resistor. Las cargas pierden energía al chocar con los átomos, el resistor se calienta, y en régimen entrega al ambiente como calor la misma energía que recibe.
 - **Cuándo es deseado:** cuando lo que se busca es **calor**: estufas, pavas eléctricas, tostadoras, planchas, los fusibles (que se funden a propósito) y las lámparas incandescentes.
+
+```grafico
+titulo: P = I²R: con el doble de corriente, cuatro veces más calor
+y = x^2 ; rojo ; gruesa
+(1, 1) ; "$P$"
+(2, 4) ; "$4P$"
+ejes: I, P
+leyenda: no
+aspecto: libre
+alto: 230
+x: 0..2.4
+y: 0..5.5
+```
 
 📍 **En el teórico:** [[Potencia eléctrica, efecto Joule y resistencia interna#Efecto Joule|01/09 · Efecto Joule]] (definición, potencia y ejemplos deseados). Serway, sec. 27.6.
 

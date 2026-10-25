@@ -31,6 +31,45 @@ con $\theta$ el ángulo entre $\vec v$ y $\vec B$.
 - **Se dirige** perpendicular **a la vez** a $\vec v$ y a $\vec B$: perpendicular al plano que forman. El sentido sale de la **regla de la mano derecha** (dedos según $\vec v$, se cierran hacia $\vec B$, el pulgar da $\vec F_B$) para una carga **positiva**; para una **negativa**, es el opuesto.
 - **Unidad del campo:** el tesla, $\text{T} = \dfrac{\text{N}}{\text{C}\cdot\text{m/s}} = \dfrac{\text{N}}{\text{A}\cdot\text{m}}$.
 
+```grafico
+titulo: B entrante y v hacia la derecha: la fuerza sobre +q va hacia arriba y sobre −q hacia abajo
+texto (-2.4, 1.6) "×"
+texto (-1.2, 1.6) "×"
+texto (0, 1.6) "×"
+texto (1.2, 1.6) "×"
+texto (2.4, 1.6) "×"
+texto (-2.4, 0) "×"
+texto (1.2, 0) "×"
+texto (2.4, 0) "×"
+texto (-2.4, -1.6) "×"
+texto (0, -1.6) "×"
+texto (1.2, -1.6) "×"
+texto (2.4, -1.6) "×"
+texto (-2.4, 2.05) "$\vec B$ entrante"
+(-1.2, 0.6) ; "$+q$"
+vector (-1.2, 0.6) (0.1, 0.6) ; verde ; "$\vec v$"
+vector (-1.2, 0.6) (-1.2, 1.35) ; rojo ; "$\vec F_B$"
+(-1.2, -0.7) ; "$-q$"
+vector (-1.2, -0.7) (0.1, -0.7) ; verde ; "$\vec v$"
+vector (-1.2, -0.7) (-1.2, -1.45) ; rojo ; "$\vec F_B$"
+leyenda: no
+x: -2.8..2.8
+y: -2..2.3
+```
+
+```grafico3d
+titulo: F_B = q v × B es perpendicular a v y a B (carga positiva, regla de la mano derecha)
+alto: 340
+vector (0, 0, 0) (2, 0, 0) ; verde ; "$\vec v$"
+vector (0, 0, 0) (1, 1.7, 0) ; azul ; "$\vec B$"
+vector (0, 0, 0) (0, 0, 1.8) ; rojo ; "$\vec F_B$"
+poligono (0, 0, 0) (2, 0, 0) (3, 1.7, 0) (1, 1.7, 0) ; ambar ; ""
+texto (0.55, 0.35, 0) "$\theta$"
+x: -0.5..3
+y: -0.5..2
+z: 0..2
+```
+
 📍 **En el teórico:** [[Magnetismo: campo magnético y fuerza sobre una carga#Fuerza magnética sobre una carga|Sin fecha (después del 15/09) · Fuerza magnética sobre una carga]] (las 7 propiedades experimentales y el producto vectorial) y [[Movimiento de cargas en un campo magnético#Unidad del campo magnético|29/09 · Unidad del campo magnético]]. Serway, sec. 29.1.
 
 ## 2) ¿Cuáles son las semejanzas y diferencias entre la fuerza magnética y la eléctrica?
@@ -47,6 +86,33 @@ $$
 | ¿Hace falta movimiento? | **no**: actúa aunque la carga esté quieta | **sí**: solo si la carga se mueve |
 | Dirección | **paralela** al campo $\vec E$ | **perpendicular** al campo $\vec B$ y a $\vec v$ |
 | ¿Hace trabajo? | **sí**: puede cambiar la rapidez y la energía cinética | **no**: es perpendicular al movimiento, solo cambia la **dirección** de la velocidad |
+
+```grafico
+titulo: Izquierda: F_E paralela a E (actúa aunque la carga esté quieta). Derecha: F_B perpendicular a B y a v
+vector (-4.6, 1.1) (-1.6, 1.1) ; azul
+vector (-4.6, 0) (-1.6, 0) ; azul ; "$\vec E$"
+vector (-4.6, -1.1) (-1.6, -1.1) ; azul
+(-3.4, 0.5) ; "$+q$"
+vector (-3.4, 0.5) (-2.3, 0.5) ; rojo ; "$\vec F_E$"
+texto (0.8, 1.2) "×"
+texto (2, 1.2) "×"
+texto (3.2, 1.2) "×"
+texto (4.4, 1.2) "×"
+texto (0.8, 0) "×"
+texto (3.2, 0) "×"
+texto (4.4, 0) "×"
+texto (0.8, -1.2) "×"
+texto (2, -1.2) "×"
+texto (3.2, -1.2) "×"
+texto (4.4, -1.2) "×"
+texto (3.8, 1.65) "$\vec B$ entrante"
+(2, 0) ; "$+q$"
+vector (2, 0) (2, 0.9) ; verde ; "$\vec v$"
+vector (2, 0) (1.1, 0) ; rojo ; "$\vec F_B$"
+leyenda: no
+x: -5..5
+y: -1.6..1.9
+```
 
 📍 **En el teórico:** [[Movimiento de cargas en un campo magnético#Diferencias entre la fuerza eléctrica y la magnética|29/09 · Diferencias entre la fuerza eléctrica y la magnética]]. Serway, sec. 29.1.
 
@@ -91,6 +157,16 @@ $$
 - **Si $\vec v$ es paralela a $\vec B$:** no hay fuerza y la partícula sigue en **línea recta** (MRU).
 - **Si $\vec v$ forma otro ángulo con $\vec B$:** la componente paralela no cambia y la perpendicular produce el giro: la trayectoria es una **hélice** (un resorte) alrededor de las líneas de campo, con $r = \dfrac{m\,v_\perp}{|q|\,B}$.
 
+```grafico3d
+titulo: Si v no es perpendicular a B, la trayectoria es una hélice alrededor de las líneas de campo
+alto: 340
+(cos(t), sen(t), t/6) ; t: 0..6pi ; azul
+vector (1.7, 0, 0) (1.7, 0, 3.2) ; rojo ; "$\vec B$"
+x: -1.6..2
+y: -1.6..1.6
+z: 0..3.3
+```
+
 📍 **En el teórico:** [[Movimiento de cargas en un campo magnético#Movimiento de una partícula cargada en un campo vec B uniforme|29/09 · Movimiento de una partícula cargada en un campo B uniforme]] (los dos casos, el radio, la velocidad angular y el período). Serway, sec. 29.2.
 
 ## 4) ¿Cuál es la fuerza de Lorentz? ¿En qué dispositivos se aplica?
@@ -107,6 +183,27 @@ $$
 - **Espectrómetro de masas:** después del selector, las partículas entran a un segundo campo $B_2$ y giran en un semicírculo de radio $r = \dfrac{m\,v}{q\,B_2}$. Midiendo $r$ se obtiene la relación $\dfrac{m}{q}$: sirve para separar isótopos e identificar sustancias.
 - **Ciclotrón (acelerador de partículas):** el campo $\vec B$ hace girar las partículas y un campo $\vec E$ alterno las acelera cada media vuelta, así que el radio crece en espiral. La energía de salida es $K = \dfrac{q^2 B^2 R^2}{2m}$.
 
+```grafico
+titulo: Selector de velocidad: F_E y F_B son opuestas; la partícula pasa derecho solo si v = E/B
+placa (-2.6, 1.4) (2.6, 1.4) ; +
+placa (-2.6, -1.4) (2.6, -1.4) ; -
+texto (-2, 0.8) "×"
+texto (0, 0.8) "×"
+texto (2, 0.8) "×"
+texto (-2, -0.8) "×"
+texto (2, -0.8) "×"
+texto (2.1, 1.05) "$\vec B$ entrante"
+(-0.6, 0) ; "$+q$"
+vector (-0.6, 0) (0.9, 0) ; verde ; "$\vec v$"
+vector (-0.6, 0) (-0.6, 0.75) ; rojo ; "$\vec F_B$"
+vector (-0.6, 0) (-0.6, -0.75) ; azul ; "$\vec F_E$"
+lineas: 6
+animar: no
+leyenda: no
+x: -3..3
+y: -1.8..1.8
+```
+
 📍 **En el teórico:** [[Movimiento de cargas en un campo magnético#Fuerza de Lorentz|29/09 · Fuerza de Lorentz]] y [[Movimiento de cargas en un campo magnético#Aplicaciones|29/09 · Aplicaciones]] (los tres dispositivos). Serway, sec. 29.3, que además cuenta el experimento de Thomson para medir $\frac{e}{m}$ del electrón.
 
 ## 5) ¿Por qué sufre torsión un alambre que lleva corriente dentro de un campo magnético? ¿Cómo se calcula esa fuerza?
@@ -120,6 +217,28 @@ $$
 $$
 
 con $\vec L$ en el sentido de la corriente y $\theta$ el ángulo entre el cable y el campo. Es máxima con el cable **perpendicular** al campo y **nula** si es **paralelo**. Para un cable no recto, se suman los tramos: $\vec F_B = I\displaystyle\int \dd\vec s\times\vec B$.
+
+```grafico
+titulo: Cable con corriente hacia arriba en un campo entrante: la fuerza F = I L × B lo empuja a la izquierda
+texto (-2, 1.2) "×"
+texto (-1, 1.2) "×"
+texto (1, 1.2) "×"
+texto (2, 1.2) "×"
+texto (-2, 0) "×"
+texto (1, 0) "×"
+texto (2, 0) "×"
+texto (-2, -1.2) "×"
+texto (-1, -1.2) "×"
+texto (1, -1.2) "×"
+texto (2, -1.2) "×"
+texto (-1.6, 1.75) "$\vec B$ entrante"
+segmento (0, -1.6) (0, 1.6) ; gris ; gruesa
+vector (0.3, -0.6) (0.3, 0.6) ; violeta ; "$I$"
+vector (0, 0) (-1.1, 0) ; rojo ; "$\vec F_B$"
+leyenda: no
+x: -2.5..2.5
+y: -1.9..2.1
+```
 
 📍 **En el teórico:** [[Fuerza sobre un conductor, ley de Biot-Savart y conductores paralelos#Fuerza sobre un conductor con corriente|06/10 · Fuerza sobre un conductor con corriente]] (la experiencia, la deducción y la fórmula). Serway, sec. 29.4.
 
@@ -153,6 +272,33 @@ $$
 
 con $\alpha_1$ y $\alpha_2$ los ángulos con que se ven los extremos desde $P$, medidos desde la perpendicular (uno positivo y otro negativo). Si el cable es infinito, $\alpha_1 = 90°$ y $\alpha_2 = -90°$. Las líneas de campo son **círculos** alrededor del cable, con el sentido dado por la regla de la mano derecha (pulgar según la corriente).
 
+```grafico
+titulo: Corriente saliente (vista de frente): las líneas de B son círculos antihorarios alrededor del cable
+texto (0.05, 0.35) "$I\ \odot$"
+(0, 0) ; ""
+(0.8cos(t), 0.8sen(t)) ; t: 0..2pi ; azul ; flecha
+(1.5cos(t), 1.5sen(t)) ; t: 0..2pi ; azul ; flecha
+(2.2cos(t), 2.2sen(t)) ; t: 0..2pi ; azul ; flecha
+vector (1.5, 0) (1.5, 0.75) ; rojo ; "$\vec B$"
+leyenda: no
+x: -2.6..2.6
+y: -2.6..2.6
+```
+
+```grafico
+titulo: Conductor recto finito: a es la distancia de P al cable; α₁ y α₂, los ángulos a los extremos desde la perpendicular
+segmento (-2.2, 0) (2.2, 0) ; gris ; gruesa
+vector (0.9, -0.3) (1.9, -0.3) ; violeta ; "$I$"
+(0.4, 1.4) ; "$P$"
+segmento (0.4, 1.4) (0.4, 0) ; gris ; punteada ; "$a$"
+segmento (0.4, 1.4) (-2.2, 0) ; gris ; punteada
+segmento (0.4, 1.4) (2.2, 0) ; gris ; punteada
+texto (0.05, 0.95) "$\alpha_1$"
+texto (0.75, 0.95) "$\alpha_2$"
+x: -2.6..2.6
+y: -0.6..1.8
+```
+
 📍 **En el teórico:** [[Fuerza sobre un conductor, ley de Biot-Savart y conductores paralelos#Fuentes de campo magnético: ley de Biot-Savart|06/10 · Ley de Biot-Savart]] y [[Fuerza sobre un conductor, ley de Biot-Savart y conductores paralelos#1. Conductor recto delgado|06/10 · Conductor recto delgado]] (con la deducción completa). Serway, sec. 30.1 y ej. 30.1.
 
 ## 7) ¿Cómo se calcula el flujo magnético? Explicar
@@ -167,6 +313,34 @@ $$
 - Es **máximo** ($B\,A$) si el campo atraviesa la superficie de frente ($\theta = 0°$) y **nulo** si el campo es paralelo a la superficie ($\theta = 90°$).
 - **Unidad:** el **weber**, $\text{Wb} = \text{T}\cdot\text{m}^2$.
 - A través de una superficie **cerrada**, el flujo magnético es **siempre cero** (ley de Gauss para el magnetismo): las líneas de $\vec B$ son cerradas y no hay polos magnéticos aislados.
+
+```grafico
+titulo: Flujo según la orientación: máximo de frente, intermedio inclinada, nulo si el campo pasa rasante
+vector (-4.8, 0.9) (-2.3, 0.9) ; rojo
+vector (-4.8, 0.3) (-2.3, 0.3) ; rojo
+vector (-4.8, -0.3) (-2.3, -0.3) ; rojo
+vector (-4.8, -0.9) (-2.3, -0.9) ; rojo
+segmento (-3.5, -1.1) (-3.5, 1.1) ; verde ; gruesa
+vector (-3.5, 0) (-2.6, 0) ; violeta ; "$\vec A$"
+texto (-3.5, -1.5) "$\theta = 0°$: máximo"
+vector (-1.2, 0.9) (1.3, 0.9) ; rojo
+vector (-1.2, 0.3) (1.3, 0.3) ; rojo
+vector (-1.2, -0.3) (1.3, -0.3) ; rojo
+vector (-1.2, -0.9) (1.3, -0.9) ; rojo
+segmento (-0.5, -1) (0.5, 1) ; verde ; gruesa
+vector (0, 0) (0.8, -0.4) ; violeta ; "$\vec A$"
+texto (0, -1.5) "$\Phi_B = B\,A\cos\theta$"
+vector (2.3, 0.9) (4.8, 0.9) ; rojo
+vector (2.3, 0.3) (4.8, 0.3) ; rojo
+vector (2.3, -0.3) (4.8, -0.3) ; rojo
+vector (2.3, -0.9) (4.8, -0.9) ; rojo
+segmento (2.5, 0) (4.5, 0) ; verde ; gruesa
+vector (3.5, 0) (3.5, 0.75) ; violeta ; "$\vec A$"
+texto (3.5, -1.5) "$\theta = 90°$: nulo"
+x: -5.2..5.2
+y: -1.8..1.3
+alto: 230
+```
 
 📍 **En el teórico:** [[Flujo magnético, ley de Faraday y ley de Lenz#Flujo magnético|20/10 · Flujo magnético]] y [[Flujo magnético, ley de Faraday y ley de Lenz#Ley de Gauss para el magnetismo|20/10 · Ley de Gauss para el magnetismo]]. Serway, sec. 30.5.
 
@@ -190,6 +364,29 @@ Lo que induce la fem no es que haya campo, sino que el flujo **cambie**: con un 
 
 O cualquier combinación de las tres.
 
+```grafico
+titulo: Fem de movimiento: la barra se mueve, el área encerrada crece y se induce una corriente (Lenz: antihoraria)
+segmento (-2.5, 1) (1.6, 1) ; gris ; gruesa
+segmento (-2.5, -1) (1.6, -1) ; gris ; gruesa
+segmento (-2.5, -1) (-2.5, 1) ; gris ; gruesa ; "$R$"
+segmento (0.5, -1.15) (0.5, 1.15) ; azul ; gruesa
+vector (0.5, 0) (1.4, 0) ; verde ; "$\vec v$"
+vector (-0.6, 1) (-1.6, 1) ; violeta ; "$I$"
+texto (-2, 0.5) "×"
+texto (-1, 0.5) "×"
+texto (0, 0.5) "×"
+texto (-2, -0.5) "×"
+texto (-1, -0.5) "×"
+texto (0, -0.5) "×"
+texto (1.2, 0.6) "×"
+texto (1.2, -0.6) "×"
+segmento (-2.5, -1.45) (0.5, -1.45) ; gris ; punteada ; "$x$"
+texto (0.75, 0.25) "$\ell$"
+leyenda: no
+x: -3..2
+y: -1.8..1.6
+```
+
 📍 **En el teórico:** [[Flujo magnético, ley de Faraday y ley de Lenz#Inducción electromagnética|20/10 · Inducción electromagnética]], [[Flujo magnético, ley de Faraday y ley de Lenz#Ley de Faraday|20/10 · Ley de Faraday]] (con las tres formas de cambiar el flujo), [[Flujo magnético, ley de Faraday y ley de Lenz#Fem de movimiento|20/10 · Fem de movimiento]] y [[Flujo magnético, ley de Faraday y ley de Lenz#Ley de Lenz|20/10 · Ley de Lenz]]. Serway, sec. 31.1 a 31.3.
 
 ## 9) ¿Cómo funciona un generador de corriente alterna y cómo se determina su fem?
@@ -206,5 +403,17 @@ $$
 - Es **máxima** cuando el campo queda en el plano de la espira ($\omega t = 90°$): el flujo es cero pero cambia lo más rápido.
 - Es **nula** cuando el campo atraviesa la espira de frente ($\omega t = 0°$ o $180°$): el flujo es máximo pero no cambia.
 - Aumenta con más espiras, más campo, más área o más velocidad de giro. La frecuencia es $f = \dfrac{\omega}{2\pi}$: $50\,\text{Hz}$ en la Argentina.
+
+```grafico
+titulo: Generador: el flujo varía como un coseno y la fem como un seno (máxima donde el flujo es cero)
+y = cos(x) ; azul ; "$\Phi_B = B\,A\cos(\omega t)$"
+y = sen(x) ; rojo ; gruesa ; "$\varepsilon = N\,B\,A\,\omega\sen(\omega t)$"
+ejes: ωt, Φ y ε
+marcas: pi
+aspecto: libre
+alto: 250
+x: 0..12.6
+y: -1.4..1.6
+```
 
 📍 **En el teórico:** [[Flujo magnético, ley de Faraday y ley de Lenz#Generador de corriente alterna|20/10 · Generador de corriente alterna]] (con el gráfico de la fem y la tabla de máximos y ceros). Serway, sec. 31.5.
