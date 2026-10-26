@@ -48,6 +48,7 @@ const TREE = [
       ["41-cap6-modelo.md", [["42-fuerza-neta-carga-puntual.md"]]],
     ]],
     ["50-preguntas-repaso.md", [["51-preguntas-electro.md"], ["52-preguntas-magnetismo.md"]]],
+    ["60-tp3-laboratorio.md"],
   ]],
 ];
 

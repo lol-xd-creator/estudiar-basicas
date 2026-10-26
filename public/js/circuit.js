@@ -8,6 +8,7 @@ import { typesetMath } from "./math.js";
 
 const NS = "http://www.w3.org/2000/svg";
 const MARGIN = 1.2; // en unidades de la grilla (lugar para las etiquetas de afuera)
+const FLOW_SLOWDOWN = 7; // el brillo de la corriente va 7 veces más lento que al principio (mareaba)
 
 export class CircuitView {
   constructor(fig, spec) {
@@ -295,7 +296,8 @@ export class CircuitView {
       if (!I) continue;
       let path = this.geom.get(seg) || [seg.a, seg.b].map(this.P);
       if (I < 0 !== electrons) path = [...path].reverse();
-      const v = 28 + 64 * (Math.abs(I) / max); // px por segundo
+      // px por segundo; más rápido donde pasa más corriente
+      const v = (28 + 64 * (Math.abs(I) / max)) / FLOW_SLOWDOWN;
       this.g.flow.append(
         svgEl("polyline", {
           points: path.join(" "),
