@@ -13,7 +13,9 @@
 //   ::: teorema Nombre {#c}  teorema, lema, proposicion, corolario, definicion,
 //   :::                      demostracion, idea, ejemplo, ejercicio, solucion,
 //                            propiedad, observacion, claves, resultado, ojo,
-//                            aclaracion (las cajas se pueden anidar)
+//                            aclaracion, ppt (lo que está en las PPT de la
+//                            cátedra), libro (ampliación plegada que no está
+//                            en las PPT) (las cajas se pueden anidar)
 //   ::: pregunta Enunciado   opción múltiple: una lista con "- [x] correcta" y
 //   - [ ] … / - [x] …        "- [ ] incorrecta" (con varias [x], se marcan
 //   :::                      todas y se comprueba); una ::: solucion adentro
@@ -191,6 +193,8 @@ const BOXES = {
   ojo: ["warning", "Ojo", false], cuidado: ["warning", "Cuidado", false],
   tip: ["tip", "Tip", false],
   aclaracion: ["aside", "Aclaración fuera del apunte", false],
+  ppt: ["ppt", "En las PPT", false],
+  libro: ["details", "Ampliación del libro (no está en las PPT)", false],
   pasos: ["pasos", "", false],
 };
 const THM_LIKE = new Set(["thm", "def", "prop"]);
@@ -280,7 +284,9 @@ md.renderer.rules.box_open = (tokens, idx, _o, env) => {
   const titleHTML = title ? md.renderInline(title, env) : "";
   const idAttr = id ? ` id="${id}"` : "";
   if (cls === "details") {
-    return `<details class="box details"${idAttr}${lineAttr(t)}><summary><span class="box-kind">${title ? titleHTML : label}</span></summary><div class="box-body">\n`;
+    // La ampliación del libro muestra siempre el rótulo, para que se note que no está en las PPT.
+    const summary = kind === "libro" && title ? `${esc(label)} · ${titleHTML}` : title ? titleHTML : label;
+    return `<details class="box details${kind === "libro" ? " libro" : ""}"${idAttr}${lineAttr(t)}><summary><span class="box-kind">${summary}</span></summary><div class="box-body">\n`;
   }
   if (cls === "proof") {
     return `<div class="box proof"${idAttr}${lineAttr(t)}><div class="box-title proof-head"><span class="box-kind">${title ? titleHTML : label}</span></div><div class="box-body">\n`;
@@ -290,7 +296,7 @@ md.renderer.rules.box_open = (tokens, idx, _o, env) => {
     // "Ley de Ohm", "Ley de los nudos (1ª de Kirchhoff)": el nombre forma parte del rótulo.
     head = `<div class="box-title"><span class="box-kind">${esc(label)}${titleHTML ? " " + titleHTML : ""}</span></div>`;
   } else if (label || titleHTML) {
-    const sep = !titleHTML ? "" : THM_LIKE.has(cls) && label ? ` <span class="box-name">(${titleHTML})</span>` : label ? `<span class="box-name">. ${titleHTML}</span>` : `<span class="box-name">${titleHTML}</span>`;
+    const sep = !titleHTML ? "" : THM_LIKE.has(cls) && label ? ` <span class="box-name">(${titleHTML})</span>` : label && kind !== "ppt" ? `<span class="box-name">. ${titleHTML}</span>` : `<span class="box-name">${titleHTML}</span>`;
     head = `<div class="box-title">${label ? `<span class="box-kind">${esc(label)}</span>` : ""}${sep}</div>`;
   }
   return `<div class="box ${cls}"${idAttr}${lineAttr(t)}>${head}<div class="box-body">\n`;

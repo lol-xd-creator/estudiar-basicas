@@ -401,6 +401,16 @@ figure.code.is-term .out { color: var(--muted); }
 .box.key { --c: var(--key); background: color-mix(in srgb, var(--key) 8%, var(--bg)); }
 .box.key .box-title::before { content: "★ "; }
 .box.details { --c: var(--line-strong); }
+/* Lo que está en las PPT de la cátedra (lo que se toma): borde más grueso y
+   un sello arriba, para distinguirlo de un vistazo al recorrer la nota. */
+.box.ppt { --c: var(--ppt); border-left-width: 5px; background: color-mix(in srgb, var(--ppt) 9%, var(--bg)); }
+.box.ppt > .box-title { display: flex; align-items: baseline; gap: 0.55em; flex-wrap: wrap; }
+.box.ppt > .box-title .box-kind { font-size: 10.5px; letter-spacing: 0.09em; text-transform: uppercase; padding: 1px 7px; border-radius: 4px; color: var(--bg); background: var(--ppt); }
+.box.ppt > .box-title .box-name { color: var(--text-strong); }
+/* Ampliación del libro que no está en las PPT: plegada y en segundo plano. */
+details.box.libro { --c: var(--faint); border-style: dashed; background: transparent; }
+details.box.libro summary { color: var(--muted); font-weight: 500; font-style: italic; }
+details.box.libro[open] { background: color-mix(in srgb, var(--faint) 5%, transparent); }
 .box-title { font-weight: 650; color: var(--c); font-size: 13.5px; margin-bottom: 2px; }
 .box.details .box-title, .box.details summary { color: var(--text-strong); }
 .box-body > :first-child { margin-top: 0.2rem; }

@@ -6,10 +6,15 @@ import { readFileSync, readdirSync } from "node:fs";
 import { parseSpec } from "../public/js/plotspec.js";
 
 const PLOT = /^```(grafico3d|grafica3d|plot3d|grafico|grafica|plot|grafico2d|plot2d)\s*\n([\s\S]*?)\n```/gm;
+// Las notas pueden estar en subcarpetas (por ejemplo contenido/pye/notas/u6/).
+const mdEn = (dir) =>
+  readdirSync(dir, { withFileTypes: true }).flatMap((d) =>
+    d.isDirectory() ? mdEn(new URL(`${d.name}/`, dir)) : d.name.endsWith(".md") ? [new URL(d.name, dir)] : [],
+  );
 const files = [
   ...readdirSync(new URL("../src/seed/", import.meta.url)).map((f) => new URL(`../src/seed/${f}`, import.meta.url)),
   ...readdirSync(new URL("../contenido/", import.meta.url), { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).flatMap((d) =>
-    readdirSync(new URL(`../contenido/${d}/notas/`, import.meta.url)).map((f) => new URL(`../contenido/${d}/notas/${f}`, import.meta.url)),
+    mdEn(new URL(`../contenido/${d}/notas/`, import.meta.url)),
   ),
 ];
 
